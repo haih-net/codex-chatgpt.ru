@@ -41,7 +41,7 @@ export const CallRoomForm: React.FC<{
   const form = useForm<CallRoomFormData>({
     resolver: yupResolver(callRoomSchema),
     defaultValues: initial ?? {
-      title: 'Созвон',
+      title: '',
       authenticatedOnly: false,
       accessCode: undefined,
     },
@@ -61,7 +61,14 @@ export const CallRoomForm: React.FC<{
   })
   const renderTitle: ControllerProps<CallRoomFormData, 'title'>['render'] =
     useCallback(
-      ({ field }) => <input {...field} id={`${id}-title`} maxLength={100} />,
+      ({ field }) => (
+        <input
+          {...field}
+          id={`${id}-title`}
+          maxLength={100}
+          placeholder="Созвон"
+        />
+      ),
       [id],
     )
   const renderAccess: ControllerProps<
