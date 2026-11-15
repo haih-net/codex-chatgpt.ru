@@ -1,18 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { JoinCallRoomMutation } from 'app/gql/generated'
 import type { CallMediaKind } from './useCallMedia'
+import type {
+  CallConnectionStatus,
+  CallMediaStatus,
+  CallSignal,
+} from '../interfaces'
+import {
+  createCallSignaling,
+  type CallSignaling,
+} from '../helpers/createCallSignaling'
 
 export type CallAdmission = NonNullable<JoinCallRoomMutation['joinCallRoom']>
-interface MediaStatus {
-  microphone: boolean
-  camera: boolean
-  screen: boolean
-}
 export interface RemoteCallPeer {
   id: string
   name: string
   streams: Record<CallMediaKind, MediaStream | null>
-  media: MediaStatus
+  media: CallMediaStatus
+  signalingConnected: boolean
   state: RTCPeerConnectionState
 }
 interface PeerRuntime {
@@ -22,29 +27,32 @@ interface PeerRuntime {
   settingAnswer: boolean
   candidates: RTCIceCandidateInit[]
   queue: Promise<void>
+  connectionId: string
+  needsRecovery: boolean
+  signalingConnected: boolean
   restarts: number
 }
-interface Signal {
-  description?: RTCSessionDescriptionInit
-  candidate?: RTCIceCandidateInit
-  media?: MediaStatus
-}
-type ServerMessage =
-  | { type: 'welcome'; id: string; peers: { id: string; name: string }[] }
-  | { type: 'joined'; peer: { id: string; name: string } }
-  | { type: 'left'; id: string }
-  | { type: 'signal'; from: string; payload: Signal }
-  | { type: 'settings' | 'closed' }
-  | { type: 'error'; message: string }
 const kinds: CallMediaKind[] = ['microphone', 'camera', 'screen']
 export function useCallConnection(
   admission: CallAdmission,
   streams: Record<CallMediaKind, MediaStream | null>,
   onSettings: () => void,
   onDisconnect: () => void,
-): { peers: RemoteCallPeer[]; status: string; error: string } {
+): {
+  peers: RemoteCallPeer[]
+  status: CallConnectionStatus
+  error: string
+  retry: () => void
+} {
   const [peers, setPeers] = useState<RemoteCallPeer[]>([])
-  const [status, setStatus] = useState('Подключение…')
+  const [status, setStatus] = useState<CallConnectionStatus>({
+    phase: 'connecting',
+    attempt: 0,
+    nextAttemptAt: null,
+    message: 'Подключение…',
+  })
+  const transport = useRef<CallSignaling | null>(null)
+  const retry = useCallback((): void => transport.current?.retry(), [])
   const [error, setError] = useState('')
   const streamsRef = useRef(streams)
   const callbacks = useRef({ onSettings, onDisconnect })
@@ -60,18 +68,33 @@ export function useCallConnection(
     let disposed = false
     let localId = ''
     const runtimes: Map<string, PeerRuntime> = new Map()
-    const socket = new WebSocket(
-      `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/api/calls/socket`,
-    )
+    const names: Map<string, string> = new Map()
+    const retiredConnections: Map<string, Set<string>> = new Map()
+    let epoch = ''
+    let iceServers: RTCIceServer[] = admission.iceServers.map((server) => ({
+      urls: server.urls,
+      username: server.username ?? undefined,
+      credential: server.credential ?? undefined,
+    }))
     const report = (err: unknown): void => {
       if (!disposed) {
         setError(err instanceof Error ? err.message : 'Ошибка соединения')
       }
     }
-    const send = (target: string, payload: Signal): void => {
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: 'signal', target, payload }))
+    const send = (target: string, payload: CallSignal): boolean => {
+      const peer = runtimes.get(target)
+      const sent =
+        peer?.signalingConnected !== false &&
+        (transport.current?.send({
+          type: 'signal',
+          target,
+          payload: { ...payload, connectionId: peer?.connectionId },
+        }) ??
+          false)
+      if (!sent && peer && (payload.description || payload.candidate)) {
+        peer.needsRecovery = true
       }
+      return sent
     }
     const update = (id: string, patch: Partial<RemoteCallPeer>): void => {
       if (!disposed) {
@@ -80,7 +103,7 @@ export function useCallConnection(
         )
       }
     }
-    const mediaStatus = (): MediaStatus => ({
+    const mediaStatus = (): CallMediaStatus => ({
       microphone: Boolean(streamsRef.current.microphone),
       camera: Boolean(streamsRef.current.camera),
       screen: Boolean(streamsRef.current.screen),
@@ -89,7 +112,7 @@ export function useCallConnection(
       id: string,
       peer: PeerRuntime,
     ): Promise<void> => {
-      if (peer.pc.signalingState === 'closed') {
+      if (runtimes.get(id) !== peer || peer.pc.signalingState === 'closed') {
         return
       }
       const transceivers = peer.pc.getTransceivers()
@@ -100,7 +123,9 @@ export function useCallConnection(
           ),
         ),
       )
-      send(id, { media: mediaStatus() })
+      if (runtimes.get(id) === peer) {
+        send(id, { media: mediaStatus() })
+      }
     }
     sync.current = () => {
       for (const [id, peer] of runtimes) {
@@ -108,24 +133,30 @@ export function useCallConnection(
       }
     }
     const remove = (id: string): void => {
+      const connectionId = runtimes.get(id)?.connectionId
+      if (connectionId) {
+        const retired = retiredConnections.get(id) ?? new Set<string>()
+        retired.add(connectionId)
+        retiredConnections.set(id, retired)
+      }
       runtimes.get(id)?.pc.close()
       runtimes.delete(id)
       if (!disposed) {
         setPeers((prev) => prev.filter((p) => p.id !== id))
       }
     }
-    const add = (id: string, name: string): PeerRuntime => {
+    const add = (
+      id: string,
+      name: string,
+      connected = true,
+      connectionId = '',
+    ): PeerRuntime => {
+      names.set(id, name)
       const existing = runtimes.get(id)
       if (existing) {
         return existing
       }
-      const pc = new RTCPeerConnection({
-        iceServers: admission.iceServers.map((server) => ({
-          urls: server.urls,
-          username: server.username ?? undefined,
-          credential: server.credential ?? undefined,
-        })),
-      })
+      const pc = new RTCPeerConnection({ iceServers })
       const peer: PeerRuntime = {
         pc,
         makingOffer: false,
@@ -134,6 +165,9 @@ export function useCallConnection(
         candidates: [],
         queue: Promise.resolve(),
         restarts: 0,
+        connectionId: localId < id ? crypto.randomUUID() : connectionId,
+        needsRecovery: false,
+        signalingConnected: connected,
       }
       runtimes.set(id, peer)
       setPeers((prev) => [
@@ -144,6 +178,7 @@ export function useCallConnection(
           streams: { microphone: null, camera: null, screen: null },
           media: { microphone: false, camera: false, screen: false },
           state: 'new',
+          signalingConnected: connected,
         },
       ])
       // Only the initial offerer creates slots. The answerer reuses the slots
@@ -159,6 +194,9 @@ export function useCallConnection(
         }
       }
       pc.ontrack = (event) => {
+        if (runtimes.get(id) !== peer || disposed) {
+          return
+        }
         const index = pc.getTransceivers().indexOf(event.transceiver)
         const kind = kinds[index]
         if (!kind) {
@@ -174,22 +212,31 @@ export function useCallConnection(
         )
       }
       pc.onicecandidate = ({ candidate }) => {
-        if (candidate) {
+        if (candidate && runtimes.get(id) === peer) {
           send(id, { candidate: candidate.toJSON() })
         }
       }
       pc.onconnectionstatechange = () => {
+        if (runtimes.get(id) !== peer || disposed) {
+          return
+        }
         update(id, { state: pc.connectionState })
+        if (pc.connectionState === 'connected') {
+          peer.restarts = 0
+        }
         if (pc.connectionState === 'failed' && peer.restarts < 2) {
           peer.restarts++
           pc.restartIce()
         }
       }
       pc.onnegotiationneeded = async () => {
+        if (runtimes.get(id) !== peer || disposed) {
+          return
+        }
         try {
           peer.makingOffer = true
           await pc.setLocalDescription()
-          if (pc.localDescription) {
+          if (pc.localDescription && runtimes.get(id) === peer) {
             send(id, { description: pc.localDescription.toJSON() })
           }
         } catch (err) {
@@ -205,11 +252,40 @@ export function useCallConnection(
     }
     const handleSignal = async (
       from: string,
-      signal: Signal,
+      signal: CallSignal,
     ): Promise<void> => {
-      const peer = runtimes.get(from)
+      let peer = runtimes.get(from)
       if (!peer) {
         return
+      }
+      if (
+        signal.connectionId &&
+        retiredConnections.get(from)?.has(signal.connectionId)
+      ) {
+        return
+      }
+      if (signal.reset) {
+        if (localId < from) {
+          const name = names.get(from) ?? ''
+          remove(from)
+          add(from, name)
+        }
+        return
+      }
+      if (!peer.connectionId && localId > from && signal.connectionId) {
+        peer.connectionId = signal.connectionId
+      }
+      if (signal.connectionId !== peer.connectionId) {
+        if (
+          signal.description?.type !== 'offer' ||
+          localId < from ||
+          !signal.connectionId
+        ) {
+          return
+        }
+        const name = names.get(from) ?? ''
+        remove(from)
+        peer = add(from, name, true, signal.connectionId)
       }
       const { pc } = peer
       if (pc.signalingState === 'closed') {
@@ -243,7 +319,7 @@ export function useCallConnection(
           }
           await replaceTracks(from, peer)
           await pc.setLocalDescription()
-          if (pc.localDescription) {
+          if (pc.localDescription && runtimes.get(from) === peer) {
             send(from, { description: pc.localDescription.toJSON() })
           }
         }
@@ -255,74 +331,140 @@ export function useCallConnection(
         }
       }
     }
-    socket.onopen = () =>
-      socket.send(
-        JSON.stringify({ type: 'join', token: admission.admissionToken }),
-      )
-    socket.onmessage = (event) => {
-      if (disposed) {
+    const recover = (id: string): void => {
+      const peer = runtimes.get(id)
+      if (!peer || !peer.signalingConnected) {
         return
       }
-      try {
-        const msg = JSON.parse(event.data) as ServerMessage
+      if (
+        peer.needsRecovery ||
+        peer.pc.signalingState !== 'stable' ||
+        ['new', 'failed', 'disconnected', 'closed'].includes(
+          peer.pc.connectionState,
+        )
+      ) {
+        if (localId < id) {
+          remove(id)
+          add(id, names.get(id) ?? '')
+        } else {
+          send(id, { reset: true })
+        }
+      } else {
+        void replaceTracks(id, peer).catch(report)
+      }
+    }
+    const signaling = createCallSignaling({
+      url: `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/api/calls/socket`,
+      admissionToken: admission.admissionToken ?? '',
+      resumeToken: admission.resumeToken ?? '',
+      onStatus: (value) => {
+        if (!disposed) {
+          setStatus(value)
+          if (value.phase === 'connected') {
+            setError('')
+          }
+        }
+      },
+      onStopped: () => {
+        for (const id of runtimes.keys()) {
+          remove(id)
+        }
+        callbacks.current.onDisconnect()
+      },
+      onMessage: (msg) => {
+        if (disposed) {
+          return
+        }
         switch (msg.type) {
-          case 'welcome':
+          case 'welcome': {
+            const returning = Boolean(localId)
+            // A server restart loses presence, but the signed session keeps our identity.
+            if (
+              (epoch && epoch !== msg.epoch) ||
+              (localId && localId !== msg.id)
+            ) {
+              for (const id of runtimes.keys()) {
+                remove(id)
+              }
+            }
+            epoch = msg.epoch
             localId = msg.id
-            setStatus('В комнате')
-            msg.peers.forEach((p) => add(p.id, p.name))
+            iceServers = msg.iceServers
+            const present = new Set(msg.peers.map((peer) => peer.id))
+            for (const id of runtimes.keys()) {
+              if (!present.has(id)) {
+                remove(id)
+              }
+            }
+            for (const p of msg.peers) {
+              const existing = runtimes.has(p.id)
+              const peer = add(p.id, p.name, p.connected)
+              peer.signalingConnected = p.connected
+              update(p.id, { signalingConnected: p.connected })
+              if (existing) {
+                recover(p.id)
+              }
+            }
+            if (returning) {
+              callbacks.current.onSettings()
+            }
             break
+          }
           case 'joined':
-            add(msg.peer.id, msg.peer.name)
+            add(msg.peer.id, msg.peer.name, msg.peer.connected)
             break
+          case 'peer-status': {
+            const peer = runtimes.get(msg.id)
+            if (peer) {
+              peer.signalingConnected = msg.connected
+              update(msg.id, { signalingConnected: msg.connected })
+              if (msg.connected) {
+                recover(msg.id)
+              }
+            }
+            break
+          }
           case 'left':
             remove(msg.id)
+            names.delete(msg.id)
+            retiredConnections.delete(msg.id)
             break
           case 'settings':
             callbacks.current.onSettings()
-            break
-          case 'closed':
-            setError('Создатель завершил звонок')
-            break
-          case 'error':
-            setError(msg.message)
             break
           case 'signal': {
             const peer = runtimes.get(msg.from)
             if (peer) {
               peer.queue = peer.queue
-                .then(() => handleSignal(msg.from, msg.payload))
-                .catch(report)
+                .then(() => {
+                  if (runtimes.get(msg.from) === peer) {
+                    return handleSignal(msg.from, msg.payload)
+                  }
+                })
+                .catch((err: unknown) => {
+                  if (runtimes.get(msg.from) === peer) {
+                    report(err)
+                  }
+                })
             }
             break
           }
         }
-      } catch (err) {
-        report(err)
-      }
-    }
-    socket.onerror = () =>
-      report(new Error('Не удалось подключиться к серверу звонков'))
-    socket.onclose = () => {
-      if (disposed) {
-        return
-      }
-      setStatus(
-        'Соединение закрыто. Выйдите и войдите повторно для переподключения.',
-      )
-      for (const id of runtimes.keys()) {
-        remove(id)
-      }
-      callbacks.current.onDisconnect()
-    }
+      },
+    })
+    transport.current = signaling
     return () => {
       disposed = true
       sync.current = null
-      socket.close()
+      signaling.close()
+      if (transport.current === signaling) {
+        transport.current = null
+      }
       for (const peer of runtimes.values()) {
         peer.pc.close()
       }
       runtimes.clear()
     }
   }, [admission])
-  return { peers, status, error }
+  return { peers, status, error, retry }
 }

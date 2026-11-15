@@ -7,6 +7,14 @@ export interface CallRoomRecord {
   closed: boolean
   version: number
   admissionToken?: string
+  resumeToken?: string
+}
+export interface CallResumeSession {
+  id: string
+  roomId: string
+  name: string
+  userId: string | null
+  version?: number
 }
 export interface CallAdmission {
   roomId: string

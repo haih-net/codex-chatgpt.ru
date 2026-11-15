@@ -30,6 +30,7 @@ mutation joinCallRoom($id: ID!, $data: JoinCallRoomInput!) {
   joinCallRoom(id: $id, data: $data) {
     ...CallRoomNoNesting
     admissionToken
+    resumeToken
     iceServers {
       urls
       username

@@ -65,8 +65,19 @@ try {
     await page.addInitScript(() => {
       const state = window as typeof window & {
         callTestPeers: RTCPeerConnection[]
+        callTestSockets: WebSocket[]
       }
       state.callTestPeers = []
+      state.callTestSockets = []
+      const NativeSocket = WebSocket
+      window.WebSocket = class extends NativeSocket {
+        constructor(url: string | URL, protocols?: string | string[]) {
+          super(url, protocols)
+          if (String(url).includes('/api/calls/socket')) {
+            state.callTestSockets.push(this)
+          }
+        }
+      }
       const Native = RTCPeerConnection
       window.RTCPeerConnection = class extends Native {
         constructor(config?: RTCConfiguration) {
@@ -126,7 +137,9 @@ try {
     await page
       .getByRole('button', { name: 'Войти в звонок', exact: true })
       .click()
-    await page.getByText('В комнате', { exact: true }).waitFor()
+    await page
+      .getByText('В комнате · связь с сервером установлена', { exact: true })
+      .waitFor()
   }
   await Promise.all(
     pages.map((page, index) =>
@@ -190,6 +203,66 @@ try {
         'video[aria-label="Экран: Гость один"]',
       )?.videoWidth ?? 0) > 0,
   )
+  const connectionsBefore = await guest1.evaluate(() => {
+    const state = window as typeof window & {
+      callTestSockets: WebSocket[]
+      callTestPeers: RTCPeerConnection[]
+    }
+    state.callTestSockets.at(-1)?.close(4000, 'Test signaling interruption')
+    return state.callTestPeers.length
+  })
+  await guest1.getByText(/Связь с сервером потеряна/).waitFor()
+  await guest1.getByText(/Попытка №1/).waitFor()
+  await guest1
+    .getByText('В комнате · связь с сервером установлена', { exact: true })
+    .waitFor()
+  assert.equal(
+    await guest1.evaluate(
+      () =>
+        (window as typeof window & { callTestPeers: RTCPeerConnection[] })
+          .callTestPeers.length,
+    ),
+    connectionsBefore,
+  )
+  await guest1
+    .getByRole('button', { name: 'Остановить демонстрацию', exact: true })
+    .waitFor()
+  await guest2.waitForFunction(
+    () =>
+      (document.querySelector<HTMLVideoElement>(
+        'video[aria-label="Экран: Гость один"]',
+      )?.videoWidth ?? 0) > 0,
+  )
+  assert.equal(await guest1.getByText('На связи', { exact: true }).count(), 2)
+  console.warn(
+    'PASS: signaling resumes automatically, attempt is visible, existing peer connections and screen capture survive',
+  )
+  await guest1.evaluate(() => {
+    const state = window as typeof window & {
+      callTestSockets: WebSocket[]
+      callTestPeers: RTCPeerConnection[]
+    }
+    state.callTestPeers
+      .find((peer) => peer.connectionState === 'connected')
+      ?.close()
+    state.callTestSockets.at(-1)?.close(4000, 'Test peer recovery')
+  })
+  await guest1.getByText(/Связь с сервером потеряна/).waitFor()
+  await guest1
+    .getByText('В комнате · связь с сервером установлена', { exact: true })
+    .waitFor()
+  for (const page of pages) {
+    await page.waitForFunction(
+      () =>
+        (
+          window as typeof window & { callTestPeers: RTCPeerConnection[] }
+        ).callTestPeers.filter((peer) => peer.connectionState === 'connected')
+          .length === 2,
+    )
+  }
+  console.warn(
+    'PASS: a lost peer connection is rebuilt after signaling recovery',
+  )
   // A participant joining while a screen is active must receive it too.
   await guest2
     .getByRole('button', { name: 'Выйти из звонка', exact: true })
@@ -231,7 +304,7 @@ try {
   await owner.getByText('Настройки сохранены', { exact: true }).waitFor()
   await guest1
     .getByText(
-      'Соединение закрыто. Выйдите и войдите повторно для переподключения.',
+      'Создатель включил вход только для авторизованных пользователей',
       { exact: true },
     )
     .waitFor()
@@ -363,15 +436,13 @@ try {
               window as typeof window & { callTestPeers: RTCPeerConnection[] }
             ).callTestPeers.map(async (pc) => ({
               state: pc.connectionState,
-              transceivers: pc
-                .getTransceivers()
-                .map((t) => ({
-                  mid: t.mid,
-                  current: t.currentDirection,
-                  sending: t.sender.track?.kind,
-                  receiving: t.receiver.track.kind,
-                  muted: t.receiver.track.muted,
-                })),
+              transceivers: pc.getTransceivers().map((t) => ({
+                mid: t.mid,
+                current: t.currentDirection,
+                sending: t.sender.track?.kind,
+                receiving: t.receiver.track.kind,
+                muted: t.receiver.track.muted,
+              })),
               stats: [...(await pc.getStats()).values()]
                 .filter(
                   (s) => s.type === 'inbound-rtp' || s.type === 'outbound-rtp',

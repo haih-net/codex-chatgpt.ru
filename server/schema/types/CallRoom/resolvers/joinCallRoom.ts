@@ -1,4 +1,6 @@
 import { builder } from '../../../builder'
+import { randomUUID } from 'node:crypto'
+import { createCallResumeToken } from '../helpers/createCallResumeToken'
 import { CallRoom } from '../types'
 import { JoinCallRoomInput } from '../inputs'
 import { comparePassword } from '../../User/helpers/auth'
@@ -36,6 +38,13 @@ builder.mutationField('joinCallRoom', (t) =>
       }
       return {
         ...room,
+        resumeToken: createCallResumeToken({
+          id: randomUUID(),
+          version: room.version,
+          roomId: id,
+          name: data.name.trim(),
+          userId: ctx.currentUser?.id ?? null,
+        }),
         admissionToken: issueCallAdmission({
           roomId: id,
           version: room.version,

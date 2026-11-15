@@ -7,6 +7,7 @@ import {
   type CallAdmission,
 } from './hooks/useCallConnection'
 import { MediaView } from './MediaView'
+import { ConnectionStatus } from './ConnectionStatus'
 const states: Record<RTCPeerConnectionState, string> = {
   new: 'Подключение',
   connecting: 'Подключение',
@@ -21,7 +22,7 @@ export const ActiveCall: React.FC<{
   onLeave: () => void
   onSettings: () => void
 }> = ({ admission, media, onLeave, onSettings }) => {
-  const { peers, status, error } = useCallConnection(
+  const { peers, status, error, retry } = useCallConnection(
     admission,
     media.streams,
     onSettings,
@@ -37,7 +38,7 @@ export const ActiveCall: React.FC<{
   return (
     <div className="panel">
       <h2>Участники: {peers.length + 1}</h2>
-      <p role="status">{status}</p>
+      <ConnectionStatus status={status} onRetry={retry} onRejoin={onLeave} />
       {!admission.iceServers.some((server) =>
         server.urls.some((url) => url.startsWith('turn')),
       ) && (
@@ -46,7 +47,14 @@ export const ActiveCall: React.FC<{
         </p>
       )}
       <div className="actions">
-        <Button disabled={media.busy.screen} onClick={toggleScreen}>
+        <Button
+          disabled={
+            media.busy.screen ||
+            status.phase === 'stopped' ||
+            status.phase === 'denied'
+          }
+          onClick={toggleScreen}
+        >
           {media.streams.screen
             ? 'Остановить демонстрацию'
             : 'Поделиться экраном'}
@@ -70,6 +78,9 @@ export const ActiveCall: React.FC<{
           <article key={peer.id} className="panel">
             <h3>{peer.name}</h3>
             <p>{states[peer.state]}</p>
+            {!peer.signalingConnected && (
+              <p className="hint">Участник восстанавливает связь с сервером.</p>
+            )}
             {peer.media.camera ? (
               <MediaView
                 stream={peer.streams.camera}

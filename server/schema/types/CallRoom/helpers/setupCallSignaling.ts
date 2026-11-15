@@ -4,6 +4,12 @@ import type { Knex } from 'knex'
 import { WebSocketServer, WebSocket } from 'ws'
 import { callEvents, consumeCallAdmission } from './callRuntime'
 import { getCallRoom } from './getCallRoom'
+import {
+  createCallResumeToken,
+  readCallResumeToken,
+} from './createCallResumeToken'
+import type { CallResumeSession } from '../interfaces'
+import { getCallIceServers } from './getCallIceServers'
 
 interface CallClient {
   id: string
@@ -12,11 +18,15 @@ interface CallClient {
   userId: string | null
   socket: WebSocket
   alive: boolean
+  disconnectedAt: number | null
+  removalTimer?: ReturnType<typeof setTimeout>
 }
 
 export function setupCallSignaling(server: Server, db: Knex): () => void {
   const wss = new WebSocketServer({ noServer: true, maxPayload: 65536 })
   const clients: Map<string, CallClient> = new Map()
+  const epoch = randomUUID()
+  let shuttingDown = false
   const send = (socket: WebSocket, data: unknown): void => {
     if (socket.readyState === WebSocket.OPEN) {
       if (socket.bufferedAmount > 1024 * 1024) {
@@ -34,9 +44,11 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
     }
   }
   const remove = (client: CallClient): void => {
-    if (!clients.delete(client.id)) {
+    if (clients.get(client.id) !== client) {
       return
     }
+    clearTimeout(client.removalTimer)
+    clients.delete(client.id)
     broadcast(client.roomId, { type: 'left', id: client.id })
   }
   const closeRoom = (id: string): void => {
@@ -104,14 +116,27 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
       console.error('Call signaling socket error:', error.message),
     )
     socket.on('pong', () => {
-      if (client) {
+      if (client?.socket === socket) {
         client.alive = true
       }
     })
     socket.on('close', () => {
       clearTimeout(timeout)
-      if (client) {
-        remove(client)
+      if (
+        client &&
+        client.socket === socket &&
+        clients.get(client.id) === client &&
+        !shuttingDown
+      ) {
+        client.disconnectedAt = Date.now()
+        broadcast(
+          client.roomId,
+          { type: 'peer-status', id: client.id, connected: false },
+          client.id,
+        )
+        const retained = client
+        retained.removalTimer = setTimeout(() => remove(retained), 60000)
+        retained.removalTimer.unref()
       }
     })
     socket.on('message', (raw) => {
@@ -130,55 +155,124 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
         }
         const msg = data as Record<string, unknown>
         if (!client) {
-          if (joining || msg.type !== 'join' || typeof msg.token !== 'string') {
+          if (
+            joining ||
+            !['join', 'resume'].includes(String(msg.type)) ||
+            typeof msg.token !== 'string'
+          ) {
             throw new Error('Нужен допуск в комнату')
           }
           joining = true
-          const admission = consumeCallAdmission(msg.token)
-          if (!admission) {
-            throw new Error('Допуск истёк. Войдите в комнату повторно.')
+          let session: CallResumeSession
+          let version: number | undefined
+          if (msg.type === 'resume') {
+            try {
+              session = readCallResumeToken(msg.token)
+              version = session.version
+            } catch {
+              throw new Error(
+                'Допуск восстановления истёк или недействителен. Войдите в комнату заново.',
+              )
+            }
+          } else {
+            const admission = consumeCallAdmission(msg.token)
+            if (!admission) {
+              throw new Error('Допуск истёк. Войдите в комнату повторно.')
+            }
+            session = { ...admission, id: randomUUID() }
+            if (typeof msg.resumeToken === 'string') {
+              const resume = readCallResumeToken(msg.resumeToken)
+              if (
+                resume.roomId !== admission.roomId ||
+                resume.userId !== admission.userId ||
+                resume.name !== admission.name ||
+                resume.version !== admission.version
+              ) {
+                throw new Error('Некорректный допуск восстановления')
+              }
+              session = resume
+            }
+            version = admission.version
           }
-          if (admission.userId) {
+          if (session.userId) {
             const user = await db('User')
-              .where({ id: admission.userId })
+              .where({ id: session.userId })
               .first('status')
             if (!user || user.status === 'blocked') {
               throw new Error('Доступ запрещён')
             }
           }
-          const room = await getCallRoom(db, admission.roomId)
+          const room = await getCallRoom(db, session.roomId)
+          if (room.closed) {
+            send(socket, { type: 'closed' })
+            socket.close(4003, 'Room closed')
+            return
+          }
           if (
-            room.closed ||
-            room.version !== admission.version ||
-            (room.authenticatedOnly && !admission.userId)
+            (version !== undefined && room.version !== version) ||
+            (room.authenticatedOnly && !session.userId)
           ) {
             throw new Error('Настройки комнаты изменились. Войдите повторно.')
           }
           if (socket.readyState !== WebSocket.OPEN) {
             return
           }
+          const previous = clients.get(session.id)
+          if (previous) {
+            clearTimeout(previous.removalTimer)
+          }
           client = {
-            id: randomUUID(),
-            roomId: room.id,
-            name: admission.name,
-            userId: admission.userId,
+            ...session,
             socket,
             alive: true,
+            disconnectedAt: null,
           }
           const peers = [...clients.values()]
-            .filter((p) => p.roomId === room.id)
-            .map((p) => ({ id: p.id, name: p.name }))
+            .filter((p) => p.roomId === room.id && p.id !== session.id)
+            .map((p) => ({
+              id: p.id,
+              name: p.name,
+              connected: p.disconnectedAt === null,
+            }))
           clients.set(client.id, client)
+          // A late close from the replaced socket must not remove the resumed session.
+          previous?.socket.close(4001, 'Session replaced')
           clearTimeout(timeout)
-          send(socket, { type: 'welcome', id: client.id, peers })
+          send(socket, {
+            type: 'welcome',
+            id: client.id,
+            peers,
+            epoch,
+            resumeToken: createCallResumeToken({
+              id: client.id,
+              roomId: client.roomId,
+              name: client.name,
+              userId: client.userId,
+            }),
+            iceServers: getCallIceServers(),
+          })
           broadcast(
             room.id,
-            { type: 'joined', peer: { id: client.id, name: client.name } },
+            previous
+              ? { type: 'peer-status', id: client.id, connected: true }
+              : {
+                  type: 'joined',
+                  peer: { id: client.id, name: client.name, connected: true },
+                },
             client.id,
           )
           return
         }
-        if (!clients.has(client.id)) {
+        if (clients.get(client.id) !== client || client.socket !== socket) {
+          return
+        }
+        if (msg.type === 'leave') {
+          remove(client)
+          socket.close(1000, 'Left room')
+          return
+        }
+        if (msg.type === 'ping') {
+          send(socket, { type: 'pong' })
           return
         }
         if (msg.type !== 'signal' || typeof msg.target !== 'string') {
@@ -216,13 +310,28 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
         ) {
           throw new Error('Некорректные дорожки')
         }
-        if (!description && !candidate && !media) {
+        if (signal.reset !== undefined && typeof signal.reset !== 'boolean') {
+          throw new Error('Некорректный запрос восстановления')
+        }
+        if (
+          signal.connectionId !== undefined &&
+          typeof signal.connectionId !== 'string'
+        ) {
+          throw new Error('Некорректный идентификатор соединения')
+        }
+        if (!description && !candidate && !media && !signal.reset) {
           throw new Error('Пустой сигнал')
         }
         send(target.socket, {
           type: 'signal',
           from: client.id,
-          payload: { description, candidate, media },
+          payload: {
+            description,
+            candidate,
+            media,
+            reset: signal.reset,
+            connectionId: signal.connectionId,
+          },
         })
       })().catch((error: unknown) => {
         send(socket, {
@@ -236,9 +345,11 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
   })
   const heartbeat = setInterval(() => {
     for (const client of clients.values()) {
+      if (client.disconnectedAt !== null) {
+        continue
+      }
       if (!client.alive) {
         client.socket.terminate()
-        remove(client)
       } else {
         client.alive = false
         client.socket.ping()
@@ -247,7 +358,11 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
   }, 15000)
   heartbeat.unref()
   return () => {
+    shuttingDown = true
     clearInterval(heartbeat)
+    for (const client of clients.values()) {
+      clearTimeout(client.removalTimer)
+    }
     server.off('upgrade', onUpgrade)
     callEvents.off('closed', closeRoom)
     callEvents.off('settings', settings)
