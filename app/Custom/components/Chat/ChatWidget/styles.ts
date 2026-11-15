@@ -3,8 +3,13 @@ import { theme } from '../../../theme'
 
 export const ChatWidgetContainer = styled.div`
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  top: 8px;
+  right: 16px;
+  @media (min-width: 800px) {
+    top: auto;
+    bottom: 24px;
+    right: 24px;
+  }
   z-index: 1000;
 `
 
@@ -46,10 +51,8 @@ export const ChatWindow = styled.div`
   height: 100%;
   max-height: 100dvh;
   border-radius: 0;
-  background: #ffffff;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+  background: ${theme.backgrounds.paper};
+  box-shadow: ${theme.shadows.dialog};
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -89,18 +92,18 @@ export const ChatWindow = styled.div`
 
 export const ChatHeader = styled.div`
   padding: 16px 20px;
-  background: #f9fafb;
+  background: ${theme.backgrounds.subtle};
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid ${theme.colors.border};
 `
 
 export const ChatTitle = styled.h3`
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
-  color: #1f2937;
+  color: ${theme.colors.text.primary};
 `
 
 export const HeaderButtons = styled.div`
@@ -117,11 +120,11 @@ export const HeaderButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: ${theme.colors.text.secondary};
   transition: color 0.2s;
 
   &:hover {
-    color: #1f2937;
+    color: ${theme.colors.text.primary};
   }
 
   svg {
@@ -190,11 +193,11 @@ export const ChatForm = styled.form`
   gap: 12px;
   align-items: center;
   margin: 0 auto;
-  background: #ffffff;
+  background: ${theme.backgrounds.paper};
   border-radius: 24px;
   padding: 8px 8px 8px 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: ${theme.shadows.input};
+  border: 1px solid ${theme.colors.border};
 `
 
 export const ChatTextarea = styled.textarea`
@@ -204,7 +207,7 @@ export const ChatTextarea = styled.textarea`
   border: none;
   border-radius: 0;
   background: transparent;
-  color: #1f2937;
+  color: ${theme.colors.text.primary};
   font-size: 1rem;
   font-family: inherit;
   resize: none;
@@ -213,7 +216,7 @@ export const ChatTextarea = styled.textarea`
   line-height: 1.5;
 
   &::placeholder {
-    color: #9ca3af;
+    color: ${theme.colors.text.disabled};
   }
 `
 
@@ -222,9 +225,9 @@ export const SendButton = styled.button`
   height: 44px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #9ca3af;
+  background: ${theme.colors.text.disabled};
   &[data-has-text='true'] {
-    background: #1f2937;
+    background: ${theme.colors.primary};
   }
   border: none;
   cursor: pointer;
@@ -234,10 +237,10 @@ export const SendButton = styled.button`
   transition: all 0.2s;
   font-size: 0;
 
-  &:hover {
-    background: #6b7280;
+  &:hover:not(:disabled) {
+    background: ${theme.colors.text.secondary};
     &[data-has-text='true'] {
-      background: #374151;
+      background: ${theme.colors.primaryHover};
     }
     transform: scale(1.05);
   }
@@ -245,7 +248,7 @@ export const SendButton = styled.button`
   svg {
     width: 20px;
     height: 20px;
-    fill: #fff;
+    fill: ${theme.colors.text.light};
     margin-left: 2px;
   }
 `
@@ -255,7 +258,7 @@ export const StopButton = styled.button`
   height: 44px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #1f2937;
+  background: ${theme.colors.primary};
   border: none;
   cursor: pointer;
   display: flex;
@@ -264,15 +267,15 @@ export const StopButton = styled.button`
   transition: all 0.2s;
   font-size: 0;
 
-  &:hover {
-    background: #374151;
+  &:hover:not(:disabled) {
+    background: ${theme.colors.primaryHover};
     transform: scale(1.05);
   }
 
   svg {
     width: 20px;
     height: 20px;
-    fill: #fff;
+    fill: ${theme.colors.text.light};
   }
 `
 
@@ -281,15 +284,15 @@ export const TypingIndicator = styled.div`
   gap: 5px;
   padding: 14px 18px;
   align-self: flex-start;
-  background: #ffffff;
+  background: ${theme.backgrounds.paper};
   border-radius: 20px;
   border-bottom-left-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: ${theme.shadows.surface};
 
   span {
     width: 8px;
     height: 8px;
-    background: #9ca3af;
+    background: ${theme.colors.text.disabled};
     border-radius: 50%;
     animation: bounce 1.4s infinite ease-in-out both;
 
@@ -316,7 +319,7 @@ export const TypingIndicator = styled.div`
 export const WelcomeMessage = styled.div`
   text-align: center;
   padding: 48px 24px;
-  color: #6b7280;
+  color: ${theme.colors.text.secondary};
   font-size: 1rem;
   line-height: 1.6;
   display: flex;
@@ -326,7 +329,7 @@ export const WelcomeMessage = styled.div`
   grid-row: 1;
 
   h4 {
-    color: #1f2937;
+    color: ${theme.colors.text.primary};
     margin: 0 0 12px;
     font-size: 1.75rem;
     font-weight: 600;
@@ -338,8 +341,12 @@ export const WelcomeMessage = styled.div`
 `
 
 export const ChatButton = styled.button`
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
+  @media (min-width: 800px) {
+    width: 56px;
+    height: 56px;
+  }
   border-radius: 50%;
   background: ${theme.colors.primary};
   border: none;
@@ -350,14 +357,15 @@ export const ChatButton = styled.button`
   }
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(23, 63, 46, 0.24);
+  box-shadow: ${theme.shadows.accent};
   transition:
     transform 0.2s,
     box-shadow 0.2s;
 
   &:hover:not(:disabled) {
+    background: ${theme.colors.primaryHover};
     transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(23, 63, 46, 0.32);
+    box-shadow: ${theme.shadows.accentHover};
   }
 
   &:disabled {
@@ -389,7 +397,7 @@ export const ChatButton = styled.button`
   svg {
     width: 24px;
     height: 24px;
-    fill: #fff;
+    fill: ${theme.colors.text.light};
     display: block;
   }
 `

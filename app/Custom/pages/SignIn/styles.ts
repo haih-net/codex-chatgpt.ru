@@ -49,7 +49,7 @@ export const SignInRegistrationStyled = styled.div`
     text-decoration: none;
 
     &:hover {
-      background: #f0f3ed;
+      background: ${theme.backgrounds.hover};
     }
   }
 `

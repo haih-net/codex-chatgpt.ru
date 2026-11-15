@@ -1,3 +1,4 @@
+import { terms } from '../../app/Custom/pages/Terms/data'
 import { createServer, type Server } from 'node:http'
 import type { AddressInfo } from 'node:net'
 import express from 'express'
@@ -51,11 +52,13 @@ describe('Динамическая карта сайта', () => {
     expect(xml).not.toContain('<sitemapindex')
   })
 
-  it('включает только главную, если концептов нет', async () => {
+  it('включает статические разделы, если концептов нет', async () => {
     query.orderBy.mockResolvedValueOnce([])
     const xml = await (await fetch(`${origin}/sitemap.xml`)).text()
     expect(xml).toContain(`<loc>${origin}/</loc>`)
-    expect(xml.match(/<url>/g)).toHaveLength(1)
+    expect(xml.match(/<url>/g)).toHaveLength(terms.length + 4)
+    expect(xml).toContain(`<loc>${origin}/terms/subagent</loc>`)
+    expect(xml).toContain(`<loc>${origin}/wiki/request-lifecycle</loc>`)
     expect(xml).not.toContain('<lastmod>')
     expect(xml).not.toContain('/signin')
   })
@@ -73,7 +76,7 @@ describe('Динамическая карта сайта', () => {
     expect(query.whereNot).toHaveBeenCalledWith('visibility', 'unpublished')
     expect(xml).toContain('/city/test?a=1&amp;b=2</loc>')
     expect(xml).toContain('<lastmod>2026-10-01T00:00:00.000Z</lastmod>')
-    expect(xml.match(/<url>/g)).toHaveLength(2)
+    expect(xml.match(/<url>/g)).toHaveLength(terms.length + 5)
     expect(xml).not.toContain('other.example')
     query.orderBy.mockResolvedValueOnce([{ uri: '/new-page' }])
     const nextXml = await (await fetch(`${origin}/sitemap.xml`)).text()

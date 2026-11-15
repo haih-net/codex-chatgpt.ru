@@ -1,8 +1,9 @@
 export const site = {
-  origin: 'http://localhost:3000',
-  name: '',
+  origin: 'https://codex-chatgpt.ru',
+  name: 'Codex ChatGPT',
   language: 'ru',
-  description: '',
+  description:
+    'Самостоятельный запуск и устройство Codex: модели, инструкции, инструменты, память и оркестрация задач. Разбор исходников и практические упражнения.',
 }
 
 // Preserve the identity published at https://fi1osof.ru/about.

@@ -8,35 +8,44 @@ const breakpoints = {
 
 const colors = {
   // Primary colors
-  primary: '#173f2e',
-  secondary: '#68716a',
-  foreground: '#20372c',
+  primary: '#235b82',
+  primaryHover: '#194664',
+  secondary: '#52616d',
+  foreground: '#27343e',
   background: '#ffffff',
   muted: '#9ca3af',
 
   // States
   success: '#10b981',
-  successBg: '#ecfdf5',
+  successBg: '#eaf6ed',
+  successText: '#246a39',
+  successBorder: '#c5dfcb',
   error: '#ef4444',
-  errorBg: '#fef2f2',
+  errorBg: '#fff2f1',
+  errorText: '#a52c2c',
+  errorBorder: '#f0c9c5',
+  errorHover: '#ffe3df',
   warning: '#f59e0b',
-  warningBg: '#fffbeb',
+  warningBg: '#fff6de',
+  warningText: '#79500a',
+  warningBorder: '#ead7a2',
   info: '#3b82f6',
   infoBg: '#eff6ff',
 
   // Text
   text: {
-    primary: '#20372c',
-    secondary: '#68716a',
+    primary: '#27343e',
+    secondary: '#52616d',
     disabled: '#9ca3af',
     light: '#ffffff',
   },
   textMuted: '#9ca3af',
 
   // Borders and dividers
-  divider: '#e2e4da',
-  border: '#e2e4da',
-  borderHover: '#d1d5db',
+  divider: '#d5dce2',
+  border: '#d5dce2',
+  borderHover: '#899ba8',
+  heading: '#202b33',
 
   // Special
   star: '#fbbf24',
@@ -58,15 +67,19 @@ const colors = {
 } as const
 
 const backgrounds = {
-  page: '#faf9f5',
+  page: '#ffffff',
   paper: '#ffffff',
+  subtle: '#f3f5f7',
+  hover: '#eef1f4',
+  code: '#f6f8fa',
+  codeDark: '#0f172a',
   elevated: '#ffffff',
   overlay: 'rgba(0, 0, 0, 0.5)',
 } as const
 
 export const theme = {
   outline: 'none',
-  font: "'Nunito', Arial, sans-serif",
+  font: 'Arial, Helvetica, sans-serif',
   colors,
   backgrounds,
   breakpoints,
@@ -97,7 +110,14 @@ export const theme = {
   shadows: {
     sm: '0 1px 2px rgba(0, 0, 0, 0.05)',
     md: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    focus: '0 0 0 3px rgba(23, 63, 46, 0.18)',
+    focus: '0 0 0 3px rgba(35, 91, 130, 0.18)',
+    accent: '0 4px 12px rgba(35, 91, 130, 0.24)',
+    accentHover: '0 6px 16px rgba(35, 91, 130, 0.32)',
+    header: '0 16px 24px rgba(39, 52, 62, 0.07)',
+    popover: '0 12px 32px rgba(39, 52, 62, 0.1)',
+    surface: '0 1px 3px rgba(0, 0, 0, 0.08)',
+    input: '0 2px 12px rgba(0, 0, 0, 0.08)',
+    dialog: '0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)',
   },
 
   transitions: {

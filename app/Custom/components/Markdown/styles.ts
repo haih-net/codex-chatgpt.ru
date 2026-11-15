@@ -70,7 +70,7 @@ export const markdownStyles = `
     border: 0;
     padding: 0;
     font-size: 0.95em;
-    white-space: pre-wrap;
+    white-space: pre;
   }
 
   /* Keep native highlighting readable on any parent background. */
@@ -83,15 +83,7 @@ export const markdownStyles = `
   }
 
   /* Links */
-  a {
-    color: inherit;
-    text-decoration: underline;
-    text-underline-offset: 0.15em;
-  }
 
-  a:hover {
-    text-decoration-thickness: 0.12em;
-  }
 
   /* Images */
   img {
@@ -200,7 +192,7 @@ export const markdownStyles = `
   .token.char,
   .token.builtin,
   .token.inserted {
-    color: ${theme.colors.success};
+    color: #21633c;
   }
 
   .token.operator,
@@ -208,27 +200,58 @@ export const markdownStyles = `
   .token.url,
   .language-css .token.string,
   .style .token.string {
-    color: ${theme.colors.error};
+    color: #a52c42;
   }
 
   .token.atrule,
   .token.attr-value,
   .token.keyword {
-    color: ${theme.colors.error};
+    color: #a52c42;
   }
 
   .token.function,
   .token.class-name {
-    color: #8b5cf6;
+    color: #6941a5;
   }
 
   .token.regex,
   .token.important,
   .token.variable {
-    color: ${theme.colors.warning};
+    color: #85520b;
   }
 `
 
 export const MarkdownStyled = styled.div`
   ${markdownStyles}
+`
+
+export const CodeBlockStyled = styled.figure`
+  margin: 26px 0;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid ${theme.colors.border};
+  border-radius: 6px;
+  background: ${theme.backgrounds.code};
+  figcaption {
+    padding: 10px 16px;
+    border-bottom: 1px solid ${theme.colors.border};
+    font-size: 13px;
+    line-height: 1.5;
+    color: ${theme.colors.text.secondary};
+  }
+  pre {
+    margin: 0;
+    padding: 18px;
+    border: 0;
+    border-radius: 0;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  pre code {
+    padding: 0;
+    background: transparent;
+    font-size: inherit;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  }
 `

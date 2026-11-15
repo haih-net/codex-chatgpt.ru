@@ -1,16 +1,17 @@
+import { theme } from 'app/Custom/theme'
 import { styled } from '@linaria/react'
 
 export const FeedbackDialog = styled.dialog`
   width: min(540px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
   box-sizing: border-box;
-  border: 1px solid #ddd;
+  border: 1px solid ${theme.colors.border};
   border-radius: 8px;
   padding: 24px;
-  background: #fff;
-  color: #252525;
+  background: ${theme.backgrounds.paper};
+  color: ${theme.colors.text.primary};
   &::backdrop {
-    background: #0008;
+    background: ${theme.backgrounds.overlay};
   }
   h2 {
     margin: 0 35px 24px 0;
@@ -37,7 +38,9 @@ export const FeedbackDialog = styled.dialog`
     box-sizing: border-box;
     width: 100%;
     padding: 12px;
-    border: 1px solid #999;
+    border: 1px solid ${theme.colors.borderHover};
+    background: ${theme.backgrounds.paper};
+    color: ${theme.colors.text.primary};
     border-radius: 4px;
     font: inherit;
   }
@@ -46,19 +49,22 @@ export const FeedbackDialog = styled.dialog`
     resize: vertical;
   }
   .submit {
-    background: #bd302b;
-    color: white;
+    background: ${theme.colors.primary};
+    color: ${theme.colors.text.light};
     padding: 12px;
     border: 0;
     border-radius: 4px;
     font: inherit;
     cursor: pointer;
   }
+  .submit:hover:not(:disabled) {
+    background: ${theme.colors.primaryHover};
+  }
   button:disabled {
     opacity: 0.6;
     cursor: wait;
   }
   [role='alert'] {
-    color: #a72622;
+    color: ${theme.colors.errorText};
   }
 `

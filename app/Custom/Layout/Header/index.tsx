@@ -138,6 +138,24 @@ export const Header: React.FC = () => {
           onBlur={handleBlur}
         >
           <Link to={'/'}>Главная</Link>
+          <Link
+            to="/terms"
+            onClick={closeMenu}
+            aria-current={
+              location.pathname.startsWith('/terms') ? 'page' : undefined
+            }
+          >
+            Термины
+          </Link>
+          <Link
+            to="/wiki"
+            onClick={closeMenu}
+            aria-current={
+              location.pathname.startsWith('/wiki') ? 'page' : undefined
+            }
+          >
+            База знаний
+          </Link>
           {/* <Link
             to="/users"
             onClick={closeMenu}

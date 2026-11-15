@@ -15,7 +15,7 @@ export const CurrentUserDataRowStyled = styled.div`
     display: grid;
     place-items: center;
     border-radius: 12px;
-    background: #f0f3ed;
+    background: ${theme.backgrounds.hover};
   }
   .account-copy {
     flex: 1 1 180px;

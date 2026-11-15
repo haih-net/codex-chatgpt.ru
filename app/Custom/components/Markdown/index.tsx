@@ -143,7 +143,11 @@ const createComponents = ({
       }
     }
 
-    return <pre {...props}>{children}</pre>
+    return (
+      <pre tabIndex={0} {...props}>
+        {children}
+      </pre>
+    )
   },
   'files-uploader': ({ children }) => {
     return <MarkdownFilesList>{children}</MarkdownFilesList>

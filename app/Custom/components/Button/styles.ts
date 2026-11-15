@@ -15,47 +15,47 @@ export const ButtonStyled = styled.button`
   line-height: 1.4;
   font-weight: 700;
   background: ${theme.colors.primary};
-  color: white;
+  color: ${theme.colors.text.light};
   cursor: pointer;
   transition:
     background 0.15s,
     border-color 0.15s,
     box-shadow 0.15s;
   &:hover:not(:disabled) {
-    background: #28583f;
+    background: ${theme.colors.primaryHover};
   }
   &[data-variant='secondary'] {
-    background: white;
+    background: ${theme.backgrounds.paper};
     color: ${theme.colors.text.primary};
     border-color: ${theme.colors.border};
     &:hover:not(:disabled) {
-      background: #f0f3ed;
-      border-color: #a8b7a9;
+      background: ${theme.backgrounds.hover};
+      border-color: ${theme.colors.borderHover};
     }
   }
   &[data-variant='danger'] {
-    background: #fff2f1;
-    color: #a52c2c;
-    border-color: #f0c9c5;
+    background: ${theme.colors.errorBg};
+    color: ${theme.colors.errorText};
+    border-color: ${theme.colors.errorBorder};
     &:hover:not(:disabled) {
-      background: #ffe3df;
+      background: ${theme.colors.errorHover};
     }
   }
   &[data-variant='warning'] {
-    background: #fff6de;
-    color: #79500a;
-    border-color: #ead7a2;
+    background: ${theme.colors.warningBg};
+    color: ${theme.colors.warningText};
+    border-color: ${theme.colors.warningBorder};
   }
   &[data-variant='success'] {
-    background: #eaf6ed;
-    color: #246a39;
-    border-color: #c5dfcb;
+    background: ${theme.colors.successBg};
+    color: ${theme.colors.successText};
+    border-color: ${theme.colors.successBorder};
   }
   &[data-variant='ghost'] {
     background: transparent;
     color: ${theme.colors.text.primary};
     &:hover:not(:disabled) {
-      background: #eef1e9;
+      background: ${theme.backgrounds.hover};
     }
   }
   &[data-size='small'] {

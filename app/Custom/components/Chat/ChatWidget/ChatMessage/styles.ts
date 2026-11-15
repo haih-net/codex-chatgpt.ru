@@ -1,3 +1,4 @@
+import { theme } from 'app/Custom/theme'
 import { MarkdownStyled } from 'app/Custom/components/Markdown/styles'
 import { styled } from '@linaria/react'
 
@@ -9,10 +10,10 @@ export const MessageStyled = styled.div`
   line-height: 1.6;
   overflow-wrap: anywhere;
   align-self: flex-start;
-  background: #ffffff;
-  color: #1f2937;
+  background: ${theme.backgrounds.paper};
+  color: ${theme.colors.text.primary};
   border-bottom-left-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: ${theme.shadows.surface};
   ${MarkdownStyled} img {
     max-width: min(100%, 420px);
     max-height: 420px;
@@ -23,11 +24,11 @@ export const MessageStyled = styled.div`
 
   &[data-user='true'] {
     align-self: flex-end;
-    background: #3b82f6;
-    color: #fff;
+    background: ${theme.colors.primary};
+    color: ${theme.colors.text.light};
     border-bottom-right-radius: 6px;
     border-bottom-left-radius: 20px;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+    box-shadow: ${theme.shadows.accent};
     ${MarkdownStyled} {
       a {
         color: inherit;
@@ -36,13 +37,13 @@ export const MessageStyled = styled.div`
       code,
       kbd {
         color: #f8fafc;
-        background: #1e3a8a;
+        background: ${theme.colors.primaryHover};
         border-color: rgba(255, 255, 255, 0.3);
       }
 
       pre {
         color: #f8fafc;
-        background: #0f172a;
+        background: ${theme.backgrounds.codeDark};
         border-color: #475569;
       }
 

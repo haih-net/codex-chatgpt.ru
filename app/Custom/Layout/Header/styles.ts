@@ -9,7 +9,7 @@ export const HeaderNavStyled = styled.nav`
   right: 0;
   padding: 20px 24px 28px;
   background: ${theme.backgrounds.page};
-  box-shadow: 0 16px 24px #182e2012;
+  box-shadow: ${theme.shadows.header};
   border-bottom: 1px solid ${theme.colors.border};
   align-items: stretch;
   gap: 6px;
@@ -46,10 +46,6 @@ export const HeaderNavStyled = styled.nav`
       padding: 10px 0;
     }
   }
-  & a[aria-current='page'] {
-    text-decoration: underline;
-    text-underline-offset: 6px;
-  }
 `
 
 export const HeaderStyled = styled.header`
@@ -61,7 +57,7 @@ export const HeaderStyled = styled.header`
   .header-inner {
     max-width: 1328px;
     margin: auto;
-    min-height: 80px;
+    min-height: 64px;
     padding: 16px;
     display: flex;
     align-items: center;
@@ -74,8 +70,8 @@ export const HeaderStyled = styled.header`
     }
 
     @media (min-width: ${theme.breakpoints.sm}px) {
-      min-height: 96px;
-      padding: 18px 40px;
+      min-height: 72px;
+      padding: 10px 40px;
     }
   }
 
@@ -114,15 +110,15 @@ export const HeaderStyled = styled.header`
     border: 1px solid ${theme.colors.border};
     border-radius: 10px;
     color: ${theme.colors.text.primary};
-    background: white;
+    background: ${theme.backgrounds.paper};
     font: inherit;
     font-weight: 700;
     text-decoration: none;
     cursor: pointer;
   }
-  .feedback-button:hover,
+  .feedback-button:hover:not(:disabled),
   .signin-link:hover {
-    background: #eef1e9;
+    background: ${theme.backgrounds.hover};
   }
   .account-menu {
     position: relative;
@@ -143,7 +139,7 @@ export const HeaderStyled = styled.header`
   }
   .account-menu summary:hover,
   .account-menu[open] summary {
-    background: #eef1e9;
+    background: ${theme.backgrounds.hover};
   }
   .account-name {
     max-width: 140px;
@@ -160,8 +156,8 @@ export const HeaderStyled = styled.header`
     margin-top: 8px;
     border: 1px solid ${theme.colors.border};
     border-radius: 12px;
-    background: white;
-    box-shadow: 0 12px 32px #1d30251a;
+    background: ${theme.backgrounds.paper};
+    box-shadow: ${theme.shadows.popover};
     min-width: 220px;
     @media (min-width: ${theme.breakpoints.sm}px) {
       position: absolute;
@@ -187,7 +183,7 @@ export const HeaderStyled = styled.header`
     color: ${theme.colors.text.primary};
   }
   .account-dropdown a:hover {
-    background: #eef1e9;
+    background: ${theme.backgrounds.hover};
   }
   .account-dropdown button {
     margin-top: 4px;

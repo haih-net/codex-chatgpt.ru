@@ -46,15 +46,15 @@ export const CustomLayoutStyled = styled.div`
     border-radius: 10px;
     padding: 14px 20px;
     background: ${theme.colors.primary};
-    color: #fff;
+    color: ${theme.colors.text.light};
     font-size: 14px;
     font-weight: 700;
     line-height: 1.4;
     transition: background 0.2s;
     text-decoration: none;
   }
-  .ai-button:hover {
-    background: #28583f;
+  .ai-button:hover:not(:disabled) {
+    background: ${theme.colors.primaryHover};
     text-decoration: none;
   }
   .skip-link {
@@ -62,7 +62,7 @@ export const CustomLayoutStyled = styled.div`
     top: -100px;
     left: 20px;
     padding: 12px 20px;
-    background: white;
+    background: ${theme.backgrounds.paper};
     z-index: 1100;
   }
   .skip-link:focus {

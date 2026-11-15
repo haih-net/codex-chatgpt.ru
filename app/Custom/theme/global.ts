@@ -8,7 +8,11 @@ export const HtmlStyled = styled.html`
   line-height: 1.5;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
-  scroll-padding-top: 112px;
+  scroll-padding-top: 96px;
+  :focus-visible {
+    outline: 2px solid ${theme.colors.primary};
+    outline-offset: 4px;
+  }
   body {
     margin: 0;
   }
@@ -43,7 +47,7 @@ export const HtmlStyled = styled.html`
     max-width: 100%;
   }
   :where(&) a {
-    color: inherit;
+    color: ${theme.colors.primary};
     text-decoration: none;
   }
   :where(&) a:hover {

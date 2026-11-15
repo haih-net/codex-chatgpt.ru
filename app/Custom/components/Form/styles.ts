@@ -17,23 +17,23 @@ export const FormStyled = styled.form`
     padding: 12px 14px;
     border: 1px solid ${theme.colors.border};
     border-radius: 10px;
-    background: white;
+    background: ${theme.backgrounds.paper};
     color: ${theme.colors.text.primary};
     font: inherit;
     margin-bottom: 8px;
     min-height: 46px;
     &:disabled {
-      background: #f2f3ef;
+      background: ${theme.backgrounds.subtle};
       opacity: 0.7;
     }
   }
   [role='alert'] {
     margin: 4px 0;
     padding: 12px 14px;
-    border: 1px solid #f0c9c5;
+    border: 1px solid ${theme.colors.errorBorder};
     border-radius: 10px;
-    background: #fff2f1;
-    color: #a52c2c;
+    background: ${theme.colors.errorBg};
+    color: ${theme.colors.errorText};
     font-size: 14px;
     overflow-wrap: anywhere;
   }

@@ -12,7 +12,7 @@ export const MetaMaskAuthStyled = styled.div`
     color: ${theme.colors.primary};
   }
   [role='alert'] {
-    color: #a52424;
+    color: ${theme.colors.errorText};
     overflow-wrap: anywhere;
     margin: 12px 0 0;
   }
