@@ -2,10 +2,7 @@ import { useCallback } from 'react'
 import type * as React from 'react'
 import { Button } from '../Button'
 import type { CallMedia } from './hooks/useCallMedia'
-import {
-  useCallConnection,
-  type CallAdmission,
-} from './hooks/useCallConnection'
+import { useCallConnection, type CallSession } from './hooks/useCallConnection'
 import { MediaView } from './MediaView'
 import { ConnectionStatus } from './ConnectionStatus'
 const states: Record<RTCPeerConnectionState, string> = {
@@ -17,13 +14,13 @@ const states: Record<RTCPeerConnectionState, string> = {
   closed: 'Соединение закрыто',
 }
 export const ActiveCall: React.FC<{
-  admission: CallAdmission
+  session: CallSession
   media: CallMedia
   onLeave: () => void
   onSettings: () => void
-}> = ({ admission, media, onLeave, onSettings }) => {
-  const { peers, status, error, retry } = useCallConnection(
-    admission,
+}> = ({ session, media, onLeave, onSettings }) => {
+  const { peers, status, error } = useCallConnection(
+    session,
     media.streams,
     onSettings,
     media.stopAll,
@@ -38,8 +35,8 @@ export const ActiveCall: React.FC<{
   return (
     <div className="panel">
       <h2>Участники: {peers.length + 1}</h2>
-      <ConnectionStatus status={status} onRetry={retry} onRejoin={onLeave} />
-      {!admission.iceServers.some((server) =>
+      <ConnectionStatus status={status} onRejoin={onLeave} />
+      {!session.iceServers.some((server) =>
         server.urls.some((url) => url.startsWith('turn')),
       ) && (
         <p className="hint">
@@ -48,11 +45,7 @@ export const ActiveCall: React.FC<{
       )}
       <div className="actions">
         <Button
-          disabled={
-            media.busy.screen ||
-            status.phase === 'stopped' ||
-            status.phase === 'denied'
-          }
+          disabled={media.busy.screen || status.phase === 'denied'}
           onClick={toggleScreen}
         >
           {media.streams.screen

@@ -6,22 +6,13 @@ export interface CallRoomRecord {
   accessCodeHash: string | null
   closed: boolean
   version: number
-  admissionToken?: string
-  resumeToken?: string
+  sessionToken?: string
 }
-export interface CallResumeSession {
+export interface CallSession {
   id: string
   roomId: string
   name: string
   userId: string | null
-  version?: number
-}
-export interface CallAdmission {
-  roomId: string
-  version: number
-  name: string
-  userId: string | null
-  expires: number
 }
 export interface CallIceServer {
   urls: string[]

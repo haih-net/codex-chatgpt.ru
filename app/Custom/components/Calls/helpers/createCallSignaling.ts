@@ -2,13 +2,11 @@ import type { CallConnectionStatus, CallServerMessage } from '../interfaces'
 
 export interface CallSignaling {
   send: (message: unknown) => boolean
-  retry: () => void
   close: () => void
 }
 export function createCallSignaling(options: {
   url: string
-  admissionToken: string
-  resumeToken: string
+  sessionToken: string
   onMessage: (message: CallServerMessage) => void
   onStatus: (status: CallConnectionStatus) => void
   onStopped: () => void
@@ -17,20 +15,13 @@ export function createCallSignaling(options: {
   let disposed = false
   let ready = false
   let stopped = false
-  let denied = false
-  let first = true
-  let resumeToken = options.resumeToken
+  let sessionToken = options.sessionToken
   let attempt = 0
-  let deadline = 0
   let lastMessage = 0
   let retryTimer: ReturnType<typeof setTimeout> | undefined
-  let deadlineTimer: ReturnType<typeof setTimeout> | undefined
-  let handshakeTimer: ReturnType<typeof setTimeout> | undefined
   let heartbeat: ReturnType<typeof setInterval> | undefined
   const clearTimers = (): void => {
     clearTimeout(retryTimer)
-    clearTimeout(deadlineTimer)
-    clearTimeout(handshakeTimer)
     clearInterval(heartbeat)
   }
   const publish = (
@@ -53,34 +44,19 @@ export function createCallSignaling(options: {
       previous.close()
     }
   }
-  const stop = (message: string, terminal = false): void => {
+  const stop = (message: string): void => {
     stopped = true
-    denied = terminal
     clearTimers()
     detach(true)
-    publish(terminal ? 'denied' : 'stopped', message)
+    publish('denied', message)
     options.onStopped()
-  }
-  const startDeadline = (): void => {
-    if (!deadline) {
-      deadline = Date.now() + 60000
-      deadlineTimer = setTimeout(
-        () =>
-          stop(
-            'Не удалось восстановить связь за 60 секунд. Захват остановлен.',
-          ),
-        60000,
-      )
-    }
   }
   const lost = (): void => {
     if (disposed || stopped) {
       return
     }
-    clearTimeout(handshakeTimer)
     clearInterval(heartbeat)
     detach(false)
-    startDeadline()
     const delay = Math.min(1000 * 2 ** Math.min(attempt, 4), 10000)
     publish(
       'reconnecting',
@@ -97,7 +73,6 @@ export function createCallSignaling(options: {
     if (disposed || stopped) {
       return
     }
-    startDeadline()
     publish(
       attempt ? 'reconnecting' : 'connecting',
       attempt ? 'Восстанавливаем связь с сервером…' : 'Подключение к серверу…',
@@ -110,19 +85,19 @@ export function createCallSignaling(options: {
       return
     }
     socket = current
-    handshakeTimer = setTimeout(lost, 8000)
+    lastMessage = Date.now()
+    heartbeat = setInterval(() => {
+      if (Date.now() - lastMessage >= 15000) {
+        lost()
+      } else if (ready && current.readyState === WebSocket.OPEN) {
+        current.send(JSON.stringify({ type: 'ping' }))
+      }
+    }, 5000)
     current.onopen = () => {
       if (current !== socket || disposed) {
         return
       }
-      current.send(
-        JSON.stringify(
-          first
-            ? { type: 'join', token: options.admissionToken, resumeToken }
-            : { type: 'resume', token: resumeToken },
-        ),
-      )
-      first = false
+      current.send(JSON.stringify({ type: 'join', token: sessionToken }))
     }
     current.onmessage = (event) => {
       if (current !== socket || disposed || stopped) {
@@ -132,34 +107,23 @@ export function createCallSignaling(options: {
       try {
         message = JSON.parse(event.data) as CallServerMessage
       } catch {
-        stop('Сервер вернул некорректное сообщение.', true)
+        stop('Сервер вернул некорректное сообщение.')
         return
       }
       lastMessage = Date.now()
       if (message.type === 'closed') {
-        stop('Создатель завершил звонок.', true)
+        stop('Создатель завершил звонок.')
         return
       }
       if (message.type === 'error') {
-        stop(message.message, true)
+        stop(message.message)
         return
       }
       if (message.type === 'welcome') {
-        clearTimeout(handshakeTimer)
-        clearTimeout(deadlineTimer)
-        deadline = 0
         ready = true
-        resumeToken = message.resumeToken
+        sessionToken = message.sessionToken
         publish('connected', 'В комнате · связь с сервером установлена')
         attempt = 0
-        clearInterval(heartbeat)
-        heartbeat = setInterval(() => {
-          if (Date.now() - lastMessage >= 15000) {
-            lost()
-          } else if (current.readyState === WebSocket.OPEN) {
-            current.send(JSON.stringify({ type: 'ping' }))
-          }
-        }, 5000)
       }
       options.onMessage(message)
     }
@@ -175,7 +139,6 @@ export function createCallSignaling(options: {
           event.code === 4001
             ? 'Сессия открыта в другом подключении. Войдите заново.'
             : 'Доступ к звонку прекращён. Войдите заново.',
-          true,
         )
       } else {
         lost()
@@ -190,15 +153,6 @@ export function createCallSignaling(options: {
       }
       socket.send(JSON.stringify(message))
       return true
-    },
-    retry: () => {
-      if (disposed || denied || !stopped) {
-        return
-      }
-      stopped = false
-      attempt = 0
-      deadline = 0
-      connect()
     },
     close: () => {
       disposed = true

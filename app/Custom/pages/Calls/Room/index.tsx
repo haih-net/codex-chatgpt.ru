@@ -10,7 +10,7 @@ import {
 import { useAppContext } from 'app/Custom/components/AppContext'
 import { CallsStyled } from 'app/Custom/components/Calls/styles'
 import { useCallMedia } from 'app/Custom/components/Calls/hooks/useCallMedia'
-import type { CallAdmission } from 'app/Custom/components/Calls/hooks/useCallConnection'
+import type { CallSession } from 'app/Custom/components/Calls/hooks/useCallConnection'
 import { DeviceControls } from 'app/Custom/components/Calls/DeviceControls'
 import { ActiveCall } from 'app/Custom/components/Calls/ActiveCall'
 import { JoinCallForm } from 'app/Custom/components/Calls/JoinForm'
@@ -28,7 +28,7 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
   const room = data?.callRoom
   const [update] = useUpdateCallRoomMutation()
   const [close, closing] = useCloseCallRoomMutation()
-  const [admission, setAdmission] = useState<CallAdmission | null>(null)
+  const [session, setSession] = useState<CallSession | null>(null)
   const [code, setCode] = useState('')
   const [notice, setNotice] = useState('')
   const [confirmClose, setConfirmClose] = useState(false)
@@ -58,11 +58,11 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
     }
   }, [room?.closed, stopAll])
   const leave = useCallback((): void => {
-    setAdmission(null)
+    setSession(null)
     media.stopAll()
   }, [media])
-  const join = useCallback((value: CallAdmission, accessCode: string): void => {
-    setAdmission(value)
+  const join = useCallback((value: CallSession, accessCode: string): void => {
+    setSession(value)
     setCode(accessCode)
   }, [])
   const save = useCallback(
@@ -122,9 +122,9 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
         <p role="status">Звонок завершён. Комната закрыта.</p>
       ) : (
         <>
-          {admission ? (
+          {session ? (
             <ActiveCall
-              admission={admission}
+              session={session}
               media={media}
               onLeave={leave}
               onSettings={refresh}

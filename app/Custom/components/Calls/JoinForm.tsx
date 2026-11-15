@@ -15,7 +15,7 @@ import {
 } from 'app/gql/generated'
 import { Button } from '../Button'
 import { FormStyled } from '../Form/styles'
-import type { CallAdmission } from './hooks/useCallConnection'
+import type { CallSession } from './hooks/useCallConnection'
 type FormData = JoinCallRoomMutationVariables['data']
 const schema: yup.ObjectSchema<FormData> = yup.object({
   name: yup
@@ -30,7 +30,7 @@ export const JoinCallForm: React.FC<{
   hasCode: boolean
   code: string
   name: string
-  onJoin: (room: CallAdmission, code: string) => void
+  onJoin: (room: CallSession, code: string) => void
 }> = ({ roomId, hasCode, code, name, onJoin }) => {
   const id = useId()
   const [join] = useJoinCallRoomMutation({ fetchPolicy: 'no-cache' })
@@ -75,8 +75,8 @@ export const JoinCallForm: React.FC<{
           try {
             const result = await join({ variables: { id: roomId, data } })
             const room = result.data?.joinCallRoom
-            if (!room?.admissionToken) {
-              throw new Error('Не удалось получить допуск')
+            if (!room?.sessionToken) {
+              throw new Error('Не удалось войти в комнату')
             }
             onJoin(room, data.accessCode ?? '')
           } catch (err) {

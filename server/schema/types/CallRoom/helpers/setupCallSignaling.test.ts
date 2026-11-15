@@ -6,10 +6,10 @@ import { WebSocket } from 'ws'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { setupCallSignaling } from './setupCallSignaling'
 import {
-  createCallResumeToken,
-  readCallResumeToken,
-} from './createCallResumeToken'
-import { issueCallAdmission, callEvents } from './callRuntime'
+  createCallSessionToken,
+  readCallSessionToken,
+} from './createCallSessionToken'
+import { callEvents } from './callRuntime'
 import type { CallServerMessage } from '../../../../../app/Custom/components/Calls/interfaces'
 
 describe('call signaling sessions', () => {
@@ -80,9 +80,9 @@ describe('call signaling sessions', () => {
     socket.send(
       JSON.stringify({
         type: 'join',
-        token: issueCallAdmission({
+        token: createCallSessionToken({
+          id: crypto.randomUUID(),
           roomId: 'room',
-          version: 1,
           name: 'Гость',
           userId: null,
         }),
@@ -109,7 +109,7 @@ describe('call signaling sessions', () => {
     const result = message(resumed)
     const online = message(second.socket)
     resumed.send(
-      JSON.stringify({ type: 'resume', token: first.welcome.resumeToken }),
+      JSON.stringify({ type: 'join', token: first.welcome.sessionToken }),
     )
     expect(await result).toMatchObject({
       type: 'welcome',
@@ -133,7 +133,7 @@ describe('call signaling sessions', () => {
     const resumed = await open()
     const result = message(resumed)
     resumed.send(
-      JSON.stringify({ type: 'resume', token: first.welcome.resumeToken }),
+      JSON.stringify({ type: 'join', token: first.welcome.sessionToken }),
     )
     const welcome = await result
     expect(welcome).toMatchObject({ type: 'welcome', id: first.welcome.id })
@@ -150,27 +150,27 @@ describe('call signaling sessions', () => {
     const restricted = await open()
     const refusal = message(restricted)
     restricted.send(
-      JSON.stringify({ type: 'resume', token: welcome.resumeToken }),
+      JSON.stringify({ type: 'join', token: welcome.sessionToken }),
     )
     expect(await refusal).toMatchObject({ type: 'error' })
     await db('CallRoom').where({ id: 'room' }).update({ closed: true })
     const closed = await open()
     const closure = message(closed)
-    closed.send(JSON.stringify({ type: 'resume', token: welcome.resumeToken }))
+    closed.send(JSON.stringify({ type: 'join', token: welcome.sessionToken }))
     expect(await closure).toEqual({ type: 'closed' })
   })
-  it('binds signed recovery to its purpose and expiry', () => {
+  it('keeps signed sessions valid without expiry and rejects tampering', () => {
     const session = {
       id: 'session',
       roomId: 'room',
       name: 'Гость',
       userId: null,
     }
-    const token = createCallResumeToken(session)
-    expect(readCallResumeToken(token)).toEqual(session)
-    expect(() => readCallResumeToken(`${token}tampered`)).toThrow()
+    const token = createCallSessionToken(session)
+    expect(readCallSessionToken(token)).toEqual(session)
+    expect(() => readCallSessionToken(`${token}tampered`)).toThrow()
     vi.useFakeTimers()
     vi.setSystemTime(Date.now() + 24 * 60 * 60 * 1000 + 1000)
-    expect(() => readCallResumeToken(token)).toThrow()
+    expect(readCallSessionToken(token)).toEqual(session)
   })
 })

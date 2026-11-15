@@ -1,4 +1,3 @@
-import { createHmac } from 'node:crypto'
 import type { CallIceServer } from '../interfaces'
 
 export function getCallIceServers(): CallIceServer[] {
@@ -7,14 +6,11 @@ export function getCallIceServers(): CallIceServer[] {
   ]
   const servers: CallIceServer[] = stun.length ? [{ urls: stun }] : []
   const urls = process.env.CALL_TURN_URLS?.split(',').filter(Boolean)
-  const secret = process.env.CALL_TURN_SECRET
-  if (urls?.length && secret) {
-    const username = `${Math.floor(Date.now() / 1000) + 86400}:call`
-    servers.push({
-      urls,
-      username,
-      credential: createHmac('sha1', secret).update(username).digest('base64'),
-    })
+  const username = process.env.CALL_TURN_USERNAME
+  const credential = process.env.CALL_TURN_CREDENTIAL
+  if (urls?.length && username && credential) {
+    servers.push({ urls, username, credential })
   }
+
   return servers
 }

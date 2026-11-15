@@ -32,12 +32,11 @@ export const CallRoom = builder
         nullable: false,
         resolve: (room, _, ctx) => ctx.currentUser?.id === room.createdById,
       }),
-      admissionToken: t.exposeString('admissionToken', { nullable: true }),
-      resumeToken: t.exposeString('resumeToken', { nullable: true }),
+      sessionToken: t.exposeString('sessionToken', { nullable: true }),
       iceServers: t.field({
         type: [CallIceServerType],
         nullable: false,
-        resolve: (room) => (room.admissionToken ? getCallIceServers() : []),
+        resolve: (room) => (room.sessionToken ? getCallIceServers() : []),
       }),
     }),
   })

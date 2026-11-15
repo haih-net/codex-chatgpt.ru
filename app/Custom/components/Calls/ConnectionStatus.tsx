@@ -5,9 +5,8 @@ import type { CallConnectionStatus } from './interfaces'
 
 export const ConnectionStatus: React.FC<{
   status: CallConnectionStatus
-  onRetry: () => void
   onRejoin: () => void
-}> = ({ status, onRetry, onRejoin }) => {
+}> = ({ status, onRejoin }) => {
   const [now, setNow] = useState(Date.now)
   useEffect(() => {
     if (!status.nextAttemptAt) {
@@ -35,14 +34,6 @@ export const ConnectionStatus: React.FC<{
           Включённые камера, микрофон и демонстрация продолжают работать. Если
           связь с участниками сохранилась, вы можете продолжать разговор.
         </p>
-      )}
-      {status.phase === 'stopped' && (
-        <>
-          <Button onClick={onRetry}>Повторить подключение</Button>
-          <p className="hint">
-            После подключения включите нужные устройства заново.
-          </p>
-        </>
       )}
       {status.phase === 'denied' && (
         <Button onClick={onRejoin}>Вернуться ко входу</Button>

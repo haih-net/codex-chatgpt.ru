@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { JoinCallRoomMutation } from 'app/gql/generated'
 import type { CallMediaKind } from './useCallMedia'
 import type {
@@ -11,7 +11,7 @@ import {
   type CallSignaling,
 } from '../helpers/createCallSignaling'
 
-export type CallAdmission = NonNullable<JoinCallRoomMutation['joinCallRoom']>
+export type CallSession = NonNullable<JoinCallRoomMutation['joinCallRoom']>
 export interface RemoteCallPeer {
   id: string
   name: string
@@ -30,11 +30,10 @@ interface PeerRuntime {
   connectionId: string
   needsRecovery: boolean
   signalingConnected: boolean
-  restarts: number
 }
 const kinds: CallMediaKind[] = ['microphone', 'camera', 'screen']
 export function useCallConnection(
-  admission: CallAdmission,
+  session: CallSession,
   streams: Record<CallMediaKind, MediaStream | null>,
   onSettings: () => void,
   onDisconnect: () => void,
@@ -42,7 +41,6 @@ export function useCallConnection(
   peers: RemoteCallPeer[]
   status: CallConnectionStatus
   error: string
-  retry: () => void
 } {
   const [peers, setPeers] = useState<RemoteCallPeer[]>([])
   const [status, setStatus] = useState<CallConnectionStatus>({
@@ -52,7 +50,6 @@ export function useCallConnection(
     message: 'Подключение…',
   })
   const transport = useRef<CallSignaling | null>(null)
-  const retry = useCallback((): void => transport.current?.retry(), [])
   const [error, setError] = useState('')
   const streamsRef = useRef(streams)
   const callbacks = useRef({ onSettings, onDisconnect })
@@ -71,7 +68,7 @@ export function useCallConnection(
     const names: Map<string, string> = new Map()
     const retiredConnections: Map<string, Set<string>> = new Map()
     let epoch = ''
-    let iceServers: RTCIceServer[] = admission.iceServers.map((server) => ({
+    let iceServers: RTCIceServer[] = session.iceServers.map((server) => ({
       urls: server.urls,
       username: server.username ?? undefined,
       credential: server.credential ?? undefined,
@@ -164,7 +161,6 @@ export function useCallConnection(
         settingAnswer: false,
         candidates: [],
         queue: Promise.resolve(),
-        restarts: 0,
         connectionId: localId < id ? crypto.randomUUID() : connectionId,
         needsRecovery: false,
         signalingConnected: connected,
@@ -221,11 +217,7 @@ export function useCallConnection(
           return
         }
         update(id, { state: pc.connectionState })
-        if (pc.connectionState === 'connected') {
-          peer.restarts = 0
-        }
-        if (pc.connectionState === 'failed' && peer.restarts < 2) {
-          peer.restarts++
+        if (pc.connectionState === 'failed') {
           pc.restartIce()
         }
       }
@@ -355,8 +347,7 @@ export function useCallConnection(
     }
     const signaling = createCallSignaling({
       url: `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/api/calls/socket`,
-      admissionToken: admission.admissionToken ?? '',
-      resumeToken: admission.resumeToken ?? '',
+      sessionToken: session.sessionToken ?? '',
       onStatus: (value) => {
         if (!disposed) {
           setStatus(value)
@@ -465,6 +456,6 @@ export function useCallConnection(
       }
       runtimes.clear()
     }
-  }, [admission])
-  return { peers, status, error, retry }
+  }, [session])
+  return { peers, status, error }
 }

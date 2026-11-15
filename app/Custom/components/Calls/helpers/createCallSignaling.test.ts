@@ -45,8 +45,7 @@ describe('call signaling recovery', () => {
     stopped.mockClear()
     connection = createCallSignaling({
       url: 'ws://localhost/api/calls/socket',
-      admissionToken: 'admission',
-      resumeToken: 'initial-resume',
+      sessionToken: 'initial-resume',
       onStatus: (status) => statuses.push(status),
       onStopped: stopped,
       onMessage: vi.fn(),
@@ -59,7 +58,7 @@ describe('call signaling recovery', () => {
   })
   const welcome = (socket: FakeSocket): void => {
     socket.open()
-    socket.receive({ type: 'welcome', resumeToken: 'established-resume' })
+    socket.receive({ type: 'welcome', sessionToken: 'established-resume' })
   }
   it('keeps media alive, shows an attempt and resumes with the refreshed token', () => {
     const first = FakeSocket.instances[0]
@@ -75,22 +74,21 @@ describe('call signaling recovery', () => {
     const second = FakeSocket.instances[1]
     second.open()
     expect(second.sent[0]).toEqual({
-      type: 'resume',
+      type: 'join',
       token: 'established-resume',
     })
     expect(statuses.at(-1)).toMatchObject({ phase: 'reconnecting', attempt: 1 })
-    second.receive({ type: 'welcome', resumeToken: 'renewed' })
+    second.receive({ type: 'welcome', sessionToken: 'renewed' })
     expect(statuses.at(-1)?.phase).toBe('connected')
     expect(stopped).not.toHaveBeenCalled()
   })
-  it('stops after 60 seconds, supports manual retry and cleans up timers on leave', () => {
+  it('keeps retrying beyond 60 seconds without stopping media and cleans up on leave', () => {
     welcome(FakeSocket.instances[0])
     FakeSocket.instances[0].disconnect()
     vi.advanceTimersByTime(60000)
-    expect(statuses.at(-1)?.phase).toBe('stopped')
-    expect(stopped).toHaveBeenCalledTimes(1)
-    connection.retry()
-    expect(statuses.at(-1)?.phase).toBe('connecting')
+    expect(statuses.at(-1)?.phase).toBe('reconnecting')
+    expect(stopped).not.toHaveBeenCalled()
+    expect(FakeSocket.instances.length).toBeGreaterThan(2)
     const count = FakeSocket.instances.length
     connection.close()
     vi.advanceTimersByTime(120000)
@@ -108,7 +106,6 @@ describe('call signaling recovery', () => {
       phase: 'denied',
       message: 'Доступ запрещён',
     })
-    connection.retry()
     vi.advanceTimersByTime(120000)
     expect(FakeSocket.instances).toHaveLength(2)
     expect(stopped).toHaveBeenCalledTimes(1)

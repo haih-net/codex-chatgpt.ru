@@ -21,7 +21,7 @@ export type CallServerMessage =
       id: string
       peers: CallPeer[]
       epoch: string
-      resumeToken: string
+      sessionToken: string
       iceServers: RTCIceServer[]
     }
   | { type: 'joined'; peer: CallPeer }
@@ -31,7 +31,7 @@ export type CallServerMessage =
   | { type: 'settings' | 'closed' | 'pong' }
   | { type: 'error'; message: string }
 export interface CallConnectionStatus {
-  phase: 'connecting' | 'connected' | 'reconnecting' | 'stopped' | 'denied'
+  phase: 'connecting' | 'connected' | 'reconnecting' | 'denied'
   attempt: number
   nextAttemptAt: number | null
   message: string

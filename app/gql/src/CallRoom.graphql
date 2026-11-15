@@ -29,8 +29,7 @@ mutation closeCallRoom($id: ID!) {
 mutation joinCallRoom($id: ID!, $data: JoinCallRoomInput!) {
   joinCallRoom(id: $id, data: $data) {
     ...CallRoomNoNesting
-    admissionToken
-    resumeToken
+    sessionToken
     iceServers {
       urls
       username

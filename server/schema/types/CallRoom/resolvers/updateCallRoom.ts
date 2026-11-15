@@ -4,7 +4,7 @@ import { CallRoomSettingsInput } from '../inputs'
 import { hashPassword } from '../../User/helpers/auth'
 import { getCallRoom } from '../helpers/getCallRoom'
 import { validateCallSettings } from '../helpers/validateCallSettings'
-import { callEvents, limitCallAttempts } from '../helpers/callRuntime'
+import { callEvents } from '../helpers/callRuntime'
 builder.mutationField('updateCallRoom', (t) =>
   t.field({
     type: CallRoom,
@@ -20,7 +20,6 @@ builder.mutationField('updateCallRoom', (t) =>
       if (room.closed) {
         throw new Error('Комната закрыта')
       }
-      limitCallAttempts(`settings:${ctx.currentUser.id}`, 20)
       validateCallSettings(data.title, data.accessCode)
       const updated = {
         title: data.title.trim(),

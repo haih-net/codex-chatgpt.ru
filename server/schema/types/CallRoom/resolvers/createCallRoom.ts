@@ -4,7 +4,6 @@ import { CallRoom } from '../types'
 import { CallRoomSettingsInput } from '../inputs'
 import { hashPassword } from '../../User/helpers/auth'
 import { validateCallSettings } from '../helpers/validateCallSettings'
-import { limitCallAttempts } from '../helpers/callRuntime'
 import type { CallRoomRecord } from '../interfaces'
 builder.mutationField('createCallRoom', (t) =>
   t.field({
@@ -14,7 +13,6 @@ builder.mutationField('createCallRoom', (t) =>
       if (!ctx.currentUser) {
         throw new Error('Войдите, чтобы создать комнату')
       }
-      limitCallAttempts(`create:${ctx.currentUser.id}`, 10)
       validateCallSettings(data.title, data.accessCode)
       const room: CallRoomRecord = {
         id: randomUUID(),

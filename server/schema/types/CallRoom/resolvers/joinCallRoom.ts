@@ -1,11 +1,10 @@
 import { builder } from '../../../builder'
 import { randomUUID } from 'node:crypto'
-import { createCallResumeToken } from '../helpers/createCallResumeToken'
+import { createCallSessionToken } from '../helpers/createCallSessionToken'
 import { CallRoom } from '../types'
 import { JoinCallRoomInput } from '../inputs'
 import { comparePassword } from '../../User/helpers/auth'
 import { getCallRoom } from '../helpers/getCallRoom'
-import { issueCallAdmission, limitCallAttempts } from '../helpers/callRuntime'
 builder.mutationField('joinCallRoom', (t) =>
   t.field({
     type: CallRoom,
@@ -14,8 +13,6 @@ builder.mutationField('joinCallRoom', (t) =>
       data: t.arg({ type: JoinCallRoomInput, required: true }),
     },
     resolve: async (_, { id, data }, ctx) => {
-      limitCallAttempts(`join:${ctx.req.ip}`, 30)
-      limitCallAttempts(`room:${id}:${ctx.req.ip}`, 10)
       const room = await getCallRoom(ctx.db, id)
       if (room.closed) {
         throw new Error('Комната закрыта')
@@ -38,16 +35,9 @@ builder.mutationField('joinCallRoom', (t) =>
       }
       return {
         ...room,
-        resumeToken: createCallResumeToken({
+        sessionToken: createCallSessionToken({
           id: randomUUID(),
-          version: room.version,
           roomId: id,
-          name: data.name.trim(),
-          userId: ctx.currentUser?.id ?? null,
-        }),
-        admissionToken: issueCallAdmission({
-          roomId: id,
-          version: room.version,
           name: data.name.trim(),
           userId: ctx.currentUser?.id ?? null,
         }),
