@@ -52,6 +52,7 @@
     "@linaria/react": "^8.2.0",
     "@mdxeditor/editor": "~4.0.1",
     "@mdxeditor/gurx": "~1.2.4",
+    "@mediapipe/tasks-vision": "1.2.3",
     "@pothos/core": "^4.15.1",
     "@pothos/plugin-scope-auth": "^4.2.1",
     "@pothos/plugin-simple-objects": "^4.1.4",

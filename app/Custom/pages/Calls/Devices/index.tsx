@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { CallsStyled } from 'app/Custom/components/Calls/styles'
 import { useCallMedia } from 'app/Custom/components/Calls/hooks/useCallMedia'
 import { DeviceControls } from 'app/Custom/components/Calls/DeviceControls'
+import { CameraEffects } from './CameraEffects'
 export const CallDevicesPage: React.FC = () => {
   const media = useCallMedia()
   return (
@@ -17,7 +18,10 @@ export const CallDevicesPage: React.FC = () => {
         регистрация не нужны. Проверка выполняется в браузере: звук и видео
         никуда не отправляются.
       </p>
-      <DeviceControls media={media} />
+      <DeviceControls
+        media={media}
+        cameraPreview={<CameraEffects stream={media.streams.camera} />}
+      />
     </CallsStyled>
   )
 }

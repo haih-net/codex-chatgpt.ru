@@ -5,7 +5,10 @@ import { Button } from '../Button'
 import type { CallMedia } from './hooks/useCallMedia'
 import { MediaView } from './MediaView'
 import { MicrophoneLevel } from './MicrophoneLevel'
-export const DeviceControls: React.FC<{ media: CallMedia }> = ({ media }) => {
+export const DeviceControls: React.FC<{
+  media: CallMedia
+  cameraPreview?: React.ReactNode
+}> = ({ media, cameraPreview }) => {
   const [microphone, setMicrophone] = useState('')
   const [camera, setCamera] = useState('')
   const [soundError, setSoundError] = useState('')
@@ -84,11 +87,13 @@ export const DeviceControls: React.FC<{ media: CallMedia }> = ({ media }) => {
       <h2>Камера и микрофон</h2>
       <div className="grid">
         <div>
-          <MediaView
-            stream={media.streams.camera}
-            muted
-            label="Изображение с вашей камеры"
-          />
+          {cameraPreview ?? (
+            <MediaView
+              stream={media.streams.camera}
+              muted
+              label="Изображение с вашей камеры"
+            />
+          )}
           {!media.streams.camera && <p className="hint">Камера выключена</p>}
           <label>
             Камера

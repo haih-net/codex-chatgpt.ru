@@ -23,7 +23,7 @@ const schema: yup.ObjectSchema<FormData> = yup.object({
     .trim()
     .required('Укажите имя')
     .max(60, 'Максимум 60 символов'),
-  accessCode: yup.string().nullable().max(64),
+  accessCode: yup.string().nullable().max(64, 'Максимум 64 символа'),
 })
 export const JoinCallForm: React.FC<{
   roomId: string
