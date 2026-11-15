@@ -4,6 +4,7 @@ import { CallsStyled } from 'app/Custom/components/Calls/styles'
 import { useCallMedia } from 'app/Custom/components/Calls/hooks/useCallMedia'
 import { DeviceControls } from 'app/Custom/components/Calls/DeviceControls'
 import { CameraEffects } from './CameraEffects'
+import { ScreenShare } from './ScreenShare'
 export const CallDevicesPage: React.FC = () => {
   const media = useCallMedia()
   return (
@@ -12,16 +13,17 @@ export const CallDevicesPage: React.FC = () => {
         <Link to="/calls">Видеозвонки</Link>
         <Link to="/docs/video-calls">Документация</Link>
       </nav>
-      <h1 tabIndex={-1}>Проверка камеры и микрофона</h1>
+      <h1 tabIndex={-1}>Проверка камеры, микрофона и демонстрации экрана</h1>
       <p>
-        Проверьте изображение, уровень микрофона и звук до созвона. Комната и
-        регистрация не нужны. Проверка выполняется в браузере: звук и видео
-        никуда не отправляются.
+        Проверьте камеру, уровень микрофона, звук и демонстрацию экрана до
+        созвона. Комната и регистрация не нужны. Проверка выполняется в
+        браузере: звук и видео никуда не отправляются.
       </p>
       <DeviceControls
         media={media}
         cameraPreview={<CameraEffects stream={media.streams.camera} />}
       />
+      <ScreenShare media={media} />
     </CallsStyled>
   )
 }

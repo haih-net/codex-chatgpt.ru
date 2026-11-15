@@ -31,7 +31,9 @@ export const CallsPage: React.FC = () => {
   return (
     <CallsStyled>
       <nav>
-        <Link to="/calls/devices">Проверка камеры и микрофона</Link>
+        <Link to="/calls/devices">
+          Проверка устройств и демонстрации экрана
+        </Link>
         <Link to="/docs/video-calls">Как устроены звонки</Link>
       </nav>
       <h1 tabIndex={-1}>Видеозвонки</h1>

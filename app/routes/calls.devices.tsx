@@ -3,8 +3,9 @@ import { CallDevicesPage } from 'app/Custom/pages/Calls/Devices'
 import { createSeoMeta } from '../components/seo/SeoHeaders'
 export const meta: MetaFunction = () => [
   ...createSeoMeta({
-    title: 'Проверка камеры и микрофона',
-    description: 'Групповые P2P-видеозвонки и проверка устройств',
+    title: 'Проверка камеры, микрофона и демонстрации экрана',
+    description:
+      'Локальная проверка камеры, микрофона, динамиков и демонстрации экрана',
     path: '/calls/devices',
   }),
   { name: 'robots', content: 'noindex, nofollow' },
