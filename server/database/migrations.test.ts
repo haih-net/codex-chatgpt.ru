@@ -46,9 +46,18 @@ it('adopts an existing SQLite database without recreating its tables or losing r
   const db = createDatabase()
   try {
     await migrateDatabase(db)
-    await migrateDatabase(db)
+    const migrations = await db('knex_migrations')
+      .select('name')
+      .orderBy('name')
+    expect(migrations).toEqual([
+      { name: '20261108000000_initial.mjs' },
+      { name: '20261115000000_call_rooms.mjs' },
+    ])
+    expect((await migrateDatabase(db))[1]).toEqual([])
     expect(await db('User').select('id')).toEqual([{ id: 'existing' }])
-    expect(await db('knex_migrations')).toHaveLength(1)
+    expect(await db('knex_migrations').select('name').orderBy('name')).toEqual(
+      migrations,
+    )
   } finally {
     await db.destroy()
     vi.unstubAllEnvs()
