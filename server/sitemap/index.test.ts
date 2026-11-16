@@ -51,15 +51,38 @@ describe('Динамическая карта сайта', () => {
     expect(xml).not.toContain('<sitemapindex')
   })
 
-  it('включает главную и документацию, если концептов нет', async () => {
+  it('включает только главную, если концептов нет', async () => {
     query.orderBy.mockResolvedValueOnce([])
     const xml = await (await fetch(`${origin}/sitemap.xml`)).text()
     expect(xml).toContain(`<loc>${origin}/</loc>`)
-    expect(xml).toContain(`<loc>${origin}/docs</loc>`)
-    expect(xml).toContain(`<loc>${origin}/docs/video-calls</loc>`)
-    expect(xml.match(/<url>/g)).toHaveLength(3)
+    expect(xml).not.toContain(`<loc>${origin}/docs</loc>`)
+    expect(xml).not.toContain(`<loc>${origin}/docs/video-calls</loc>`)
+    expect(xml.match(/<url>/g)).toHaveLength(1)
     expect(xml).not.toContain('<lastmod>')
     expect(xml).not.toContain('/signin')
+  })
+
+  it('исключает звонки и документацию, в том числе ссылки из базы', async () => {
+    const paths = [
+      '/calls',
+      '/calls/',
+      '/calls/devices',
+      '/calls/test-room',
+      '/docs',
+      '/docs/',
+      '/docs/video-calls',
+    ]
+    query.orderBy.mockResolvedValueOnce(
+      paths.flatMap((path) => [
+        { uri: path },
+        { uri: `${origin}${path}?source=test` },
+      ]),
+    )
+    const xml = await (await fetch(`${origin}/sitemap.xml`)).text()
+    expect(xml.match(/<url>/g)).toHaveLength(1)
+    for (const path of paths) {
+      expect(xml).not.toContain(`${origin}${path}`)
+    }
   })
 
   it('читает базу заново, фильтрует публикации и экранирует XML', async () => {
@@ -75,7 +98,7 @@ describe('Динамическая карта сайта', () => {
     expect(query.whereNot).toHaveBeenCalledWith('visibility', 'unpublished')
     expect(xml).toContain('/example?a=1&amp;b=2</loc>')
     expect(xml).toContain('<lastmod>2026-10-01T00:00:00.000Z</lastmod>')
-    expect(xml.match(/<url>/g)).toHaveLength(4)
+    expect(xml.match(/<url>/g)).toHaveLength(2)
     expect(xml).not.toContain('other.example')
     query.orderBy.mockResolvedValueOnce([{ uri: '/new-page' }])
     const nextXml = await (await fetch(`${origin}/sitemap.xml`)).text()

@@ -23,7 +23,7 @@ function generateUrls(items: SitemapItem[], origin: string): string {
   const urls = new Map<string, SitemapItem>()
   for (const item of items) {
     const url = new URL(item.uri, `${origin}/`)
-    if (url.origin !== origin) {
+    if (url.origin !== origin || /^\/(calls|docs)(?:\/|$)/.test(url.pathname)) {
       continue
     }
     urls.set(url.href, item)
@@ -50,10 +50,7 @@ async function generateSitemap(req: Request, res: Response): Promise<void> {
     )
     .whereNot('visibility', 'unpublished')
     .orderBy('updatedAt', 'desc')
-  const xml = generateUrls(
-    [{ uri: '/' }, { uri: '/docs' }, { uri: '/docs/video-calls' }, ...concepts],
-    origin,
-  )
+  const xml = generateUrls([{ uri: '/' }, ...concepts], origin)
   res.set('Cache-Control', 'no-store').type('application/xml').send(xml)
 }
 

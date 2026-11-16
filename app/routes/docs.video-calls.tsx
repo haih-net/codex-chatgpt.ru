@@ -9,6 +9,7 @@ export const meta: MetaFunction = ({ error }) =>
         title: 'Видеозвонки | Документация',
         description:
           'Групповые P2P-видеозвонки, приглашения по ссылке, коды доступа и демонстрация экрана: устройство системы и ограничения.',
+        noindex: true,
         path: '/docs/video-calls',
       })
 
