@@ -62,6 +62,7 @@ describe('shared application context', () => {
                   me: {
                     __typename: 'User',
                     id: 'owner',
+                    email: null,
                     username: 'owner',
                     fullname: 'Owner',
                     sudo: false,
