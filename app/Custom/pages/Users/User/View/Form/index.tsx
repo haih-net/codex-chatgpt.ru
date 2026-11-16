@@ -51,6 +51,7 @@ export const UserEditForm: React.FC<{
       const data: UserFormData = {
         username: String(fields.get('username') ?? '').trim() || null,
         fullname: String(fields.get('fullname') ?? ''),
+        email: String(fields.get('email') ?? '').trim() || null,
         password: String(fields.get('password') ?? '') || undefined,
         image,
         intro,
@@ -92,6 +93,16 @@ export const UserEditForm: React.FC<{
             name="username"
             defaultValue={user.username ?? ''}
             autoComplete="username"
+          />
+        </label>
+        <label htmlFor={`${id}-email`}>
+          Email
+          <input
+            id={`${id}-email`}
+            name="email"
+            type="email"
+            defaultValue={user.email ?? ''}
+            autoComplete="email"
           />
         </label>
         <label htmlFor={`${id}-password`}>

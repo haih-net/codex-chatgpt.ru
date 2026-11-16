@@ -81,7 +81,10 @@ const managedFields = (t: InputBuilder) => ({
 export const CurrentUserUpdateInput = builder.inputType(
   'CurrentUserUpdateInput',
   {
-    fields: profileFields,
+    fields: (t) => ({
+      ...profileFields(t),
+      email: t.string(),
+    }),
   },
 )
 export const UserUpdateDataInput = builder.inputType('UserUpdateDataInput', {
