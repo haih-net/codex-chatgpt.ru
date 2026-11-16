@@ -5,8 +5,9 @@ import { MainPage } from 'app/Custom/pages/MainPage'
 
 export const handle = {
   seo: {
-    title: 'haih.site',
-    description: '',
+    title: 'Codex: устройство, установка и три режима работы',
+    description:
+      'Что такое Codex, почему я выбираю его для работы и как использовать разные модели и провайдеров. Установка, разовый запуск, TUI и app-server.',
     path: '/',
     image: undefined,
   },

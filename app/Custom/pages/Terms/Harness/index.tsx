@@ -68,5 +68,10 @@ export const HarnessPage: React.FC = () => (
       </Link>
       .
     </p>
+    <p>
+      <a href="https://что-такое-ии.рф/terms/harness">
+        Общее объяснение понятия в справочнике «Что такое ИИ»
+      </a>
+    </p>
   </TermView>
 )

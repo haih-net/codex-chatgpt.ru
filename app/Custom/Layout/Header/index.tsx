@@ -176,19 +176,9 @@ export const Header: React.FC = () => {
           >
             Написать
           </button>
-          {location.pathname === '/ai' ? (
-            <Link to="/ai" className="ai-button" onClick={closeMenu}>
-              Спросить ИИ <span aria-hidden="true">↗</span>
-            </Link>
-          ) : (
-            <button
-              type="button"
-              className="ai-button"
-              onClick={handleOpenChat}
-            >
-              Спросить ИИ <span aria-hidden="true">↗</span>
-            </button>
-          )}
+          <button type="button" className="ai-button" onClick={handleOpenChat}>
+            Спросить ИИ <span aria-hidden="true">↗</span>
+          </button>
           {!userLoading &&
             (user ? (
               <details className="account-menu" ref={accountMenu}>

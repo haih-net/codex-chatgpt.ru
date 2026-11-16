@@ -67,5 +67,10 @@ export const AgentPage: React.FC = () => (
       </Link>
       .
     </p>
+    <p>
+      <a href="https://что-такое-ии.рф/terms/agent">
+        Общее объяснение понятия в справочнике «Что такое ИИ»
+      </a>
+    </p>
   </TermView>
 )

@@ -67,5 +67,10 @@ export const ContextPage: React.FC = () => (
       </Link>
       .
     </p>
+    <p>
+      <a href="https://что-такое-ии.рф/terms/context">
+        Общее объяснение понятия в справочнике «Что такое ИИ»
+      </a>
+    </p>
   </TermView>
 )
