@@ -1,3 +1,4 @@
+import { TextField } from '../../controls/TextField'
 import { useCallback } from 'react'
 import type * as React from 'react'
 import { useId, useState } from 'react'
@@ -81,12 +82,12 @@ export const CallRoomForm: React.FC<{
   const renderCode: ControllerProps<CallRoomFormData, 'accessCode'>['render'] =
     useCallback(
       ({ field }) => (
-        <input
+        <TextField
           {...field}
           value={field.value ?? ''}
           id={`${id}-code`}
-          type="password"
-          autoComplete="new-password"
+          masked
+          autoComplete="off"
           maxLength={64}
         />
       ),

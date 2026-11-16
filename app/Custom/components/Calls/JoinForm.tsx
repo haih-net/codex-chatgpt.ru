@@ -1,3 +1,4 @@
+import { TextField } from '../controls/TextField'
 import { useCallback } from 'react'
 import type * as React from 'react'
 import { useEffect, useId, useState } from 'react'
@@ -56,11 +57,11 @@ export const JoinCallForm: React.FC<{
   const renderCode: ControllerProps<FormData, 'accessCode'>['render'] =
     useCallback(
       ({ field }) => (
-        <input
+        <TextField
           {...field}
           value={field.value ?? ''}
           id={`${id}-code`}
-          type="password"
+          masked
           maxLength={64}
           autoComplete="off"
         />

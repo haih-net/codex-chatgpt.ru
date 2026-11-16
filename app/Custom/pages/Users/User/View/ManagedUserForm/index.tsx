@@ -1,3 +1,4 @@
+import { TextField } from 'app/Custom/components/controls/TextField'
 import { lazy, Suspense, useCallback } from 'react'
 import { useController, FormProvider, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -147,7 +148,7 @@ export const ManagedUserForm: React.FC<{
           )}
           <label>
             {user ? 'New password' : 'Password'}
-            <input
+            <TextField
               type="password"
               autoComplete="new-password"
               required={!user}

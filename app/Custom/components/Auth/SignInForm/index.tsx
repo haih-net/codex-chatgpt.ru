@@ -1,3 +1,4 @@
+import { TextField } from '../../controls/TextField'
 import React, { useCallback, useId, useRef, useState } from 'react'
 import {
   Controller,
@@ -125,7 +126,7 @@ export const SignInForm: React.FC<SignInFormProps> = ({
           <label htmlFor={fieldId}>
             {isPassword ? 'Пароль' : 'Логин или электронная почта'}
           </label>
-          <input
+          <TextField
             {...field}
             id={fieldId}
             type={isPassword ? 'password' : 'text'}

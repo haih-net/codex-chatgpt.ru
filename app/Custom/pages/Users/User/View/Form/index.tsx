@@ -1,3 +1,4 @@
+import { TextField } from 'app/Custom/components/controls/TextField'
 import React, {
   lazy,
   Suspense,
@@ -95,7 +96,7 @@ export const UserEditForm: React.FC<{
         </label>
         <label htmlFor={`${id}-password`}>
           Новый пароль
-          <input
+          <TextField
             id={`${id}-password`}
             name="password"
             type="password"

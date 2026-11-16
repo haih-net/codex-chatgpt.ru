@@ -1,3 +1,4 @@
+import { TextField } from '../../controls/TextField'
 import React, { useCallback, useId, useRef, useState } from 'react'
 import {
   Controller,
@@ -106,7 +107,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       return (
         <>
           <label htmlFor={fieldId}>{label}</label>
-          <input
+          <TextField
             {...field}
             value={field.value ?? ''}
             id={fieldId}
