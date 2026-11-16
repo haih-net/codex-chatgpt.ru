@@ -162,7 +162,7 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
             code={code}
             hasCode={Boolean(room.hasAccessCode)}
           />
-          {room.isOwner && (
+          {(room.isOwner || (user?.sudo && user.status === 'active')) && (
             <details className="panel">
               <summary>Настройки комнаты</summary>
               <CallRoomForm

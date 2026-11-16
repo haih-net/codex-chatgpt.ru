@@ -8,8 +8,14 @@ builder.mutationField('closeCallRoom', (t) =>
     args: { id: t.arg.id({ required: true }) },
     resolve: async (_, { id }, ctx) => {
       const room = await getCallRoom(ctx.db, id)
-      if (!ctx.currentUser || ctx.currentUser.id !== room.createdById) {
-        throw new Error('Завершить комнату может только создатель')
+      if (
+        !ctx.currentUser ||
+        (ctx.currentUser.id !== room.createdById &&
+          !(
+            ctx.currentUser.sudo === true && ctx.currentUser.status === 'active'
+          ))
+      ) {
+        throw new Error('Завершить комнату может создатель или администратор')
       }
       await ctx
         .db('CallRoom')

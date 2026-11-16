@@ -14,8 +14,14 @@ builder.mutationField('updateCallRoom', (t) =>
     },
     resolve: async (_, { id, data }, ctx) => {
       const room = await getCallRoom(ctx.db, id)
-      if (!ctx.currentUser || ctx.currentUser.id !== room.createdById) {
-        throw new Error('Настройки доступны только создателю')
+      if (
+        !ctx.currentUser ||
+        (ctx.currentUser.id !== room.createdById &&
+          !(
+            ctx.currentUser.sudo === true && ctx.currentUser.status === 'active'
+          ))
+      ) {
+        throw new Error('Настройки доступны создателю и администратору')
       }
       if (room.closed) {
         throw new Error('Комната закрыта')

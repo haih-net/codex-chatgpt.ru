@@ -76,3 +76,66 @@ export const CallsStyled = styled.section`
     padding: 40px 24px 72px;
   }
 `
+
+export const CallRoomListStyled = styled.section`
+  h2 {
+    margin: 0 0 8px;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    padding: 12px 0;
+  }
+  li + li {
+    border-top: 1px solid #d8ddd7;
+  }
+  li:last-child {
+    padding-bottom: 0;
+  }
+  .room-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+  .room-info {
+    flex: 1 1 160px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .room-details,
+  .room-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .room-details {
+    margin-top: 4px;
+  }
+  .room-details span + span::before {
+    content: '·';
+    margin-right: 8px;
+  }
+  .room-settings {
+    max-width: 560px;
+    margin-top: 16px;
+  }
+  .room-details {
+    color: #58665e;
+    font-size: 0.9rem;
+  }
+  .room-confirmation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .room-confirmation p {
+    flex-basis: 100%;
+    margin: 0;
+  }
+`
