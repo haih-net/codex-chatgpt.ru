@@ -1,3 +1,4 @@
+import { AccessSelect } from './AccessSelect'
 import { TextField } from '../../controls/TextField'
 import { useCallback } from 'react'
 import type * as React from 'react'
@@ -7,31 +8,11 @@ import {
   FormProvider,
   useForm,
   type ControllerProps,
-  type ControllerRenderProps,
 } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Button } from '../../Button'
 import { FormStyled } from '../../Form/styles'
 import { callRoomSchema, type CallRoomFormData } from './schema'
-const AccessSelect: React.FC<{
-  field: ControllerRenderProps<CallRoomFormData, 'authenticatedOnly'>
-  id: string
-}> = ({ field, id }) => {
-  const change = useCallback<React.ChangeEventHandler<HTMLSelectElement>>(
-    (event) => field.onChange(event.target.value === 'authenticated'),
-    [field],
-  )
-  return (
-    <select
-      id={id}
-      value={field.value ? 'authenticated' : 'everyone'}
-      onChange={change}
-    >
-      <option value="everyone">Всем по ссылке</option>
-      <option value="authenticated">Только авторизованным</option>
-    </select>
-  )
-}
 export const CallRoomForm: React.FC<{
   initial?: CallRoomFormData
   editing?: boolean

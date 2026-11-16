@@ -1,3 +1,4 @@
+import { Select } from 'app/Custom/components/controls/Select'
 import type * as React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ImageSegmenter } from '@mediapipe/tasks-vision'
@@ -18,16 +19,12 @@ export const CameraEffects: React.FC<{ stream: MediaStream | null }> = ({
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  const changeMode: React.ChangeEventHandler<HTMLSelectElement> = useCallback(
-    (event) => {
-      const value = event.target.value
-      if (value === 'none' || value === 'blur' || value === 'image') {
-        setStatus('idle')
-        setMode(value)
-      }
-    },
-    [],
-  )
+  const changeMode = useCallback((value: string | null): void => {
+    if (value === 'none' || value === 'blur' || value === 'image') {
+      setStatus('idle')
+      setMode(value)
+    }
+  }, [])
   const changeImage: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (event) => {
       setStatus('idle')
@@ -231,14 +228,16 @@ export const CameraEffects: React.FC<{ stream: MediaStream | null }> = ({
           aria-label="Изображение камеры с эффектом фона"
         />
       </div>
-      <label>
-        Эффект фона
-        <select value={mode} onChange={changeMode}>
-          <option value="none">Без эффекта</option>
-          <option value="blur">Размытие фона</option>
-          <option value="image">Картинка вместо фона</option>
-        </select>
-      </label>
+      <Select
+        label="Эффект фона"
+        value={mode}
+        onChange={changeMode}
+        options={[
+          { id: 'none', text: 'Без эффекта' },
+          { id: 'blur', text: 'Размытие фона' },
+          { id: 'image', text: 'Картинка вместо фона' },
+        ]}
+      />
       {mode === 'image' && (
         <label>
           Выберите картинку для фона

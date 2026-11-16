@@ -1,3 +1,4 @@
+import { Select } from 'app/Custom/components/controls/Select'
 import { TextField } from 'app/Custom/components/controls/TextField'
 import { lazy, Suspense, useCallback } from 'react'
 import { useController, FormProvider, useForm } from 'react-hook-form'
@@ -68,6 +69,14 @@ export const ManagedUserForm: React.FC<{
       isAiAgent: user?.isAiAgent ?? false,
     },
   })
+  const { field: status } = useController({
+    control: form.control,
+    name: 'status',
+  })
+  const changeStatus = useCallback(
+    (value: string | null): void => status.onChange(value || undefined),
+    [status],
+  )
   const { field: image } = useController({
     control: form.control,
     name: 'image',
@@ -155,21 +164,20 @@ export const ManagedUserForm: React.FC<{
               {...form.register('password')}
             />
           </label>
-          <label>
-            Status
-            <select
-              {...form.register('status', {
-                setValueAs: (value) => value || undefined,
-              })}
-            >
-              {!user && <option value="">Site default</option>}
-              {Object.values(UserStatusEnum).map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-          </label>
+          <Select
+            {...status}
+            label="Status"
+            value={status.value ?? ''}
+            onChange={changeStatus}
+            disabled={form.formState.isSubmitting}
+            options={[
+              ...(!user ? [{ id: '', text: 'Site default' }] : []),
+              ...Object.values(UserStatusEnum).map((value) => ({
+                id: value,
+                text: value,
+              })),
+            ]}
+          />
           <label>
             <input type="checkbox" {...form.register('sudo')} />
             Sudo access

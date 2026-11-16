@@ -1,3 +1,4 @@
+import { Select } from '../controls/Select'
 import { useCallback } from 'react'
 import type * as React from 'react'
 import { useEffect, useRef, useState } from 'react'
@@ -49,25 +50,26 @@ export const DeviceControls: React.FC<{
       )
     }
   }, [])
-  const changeCamera: React.ChangeEventHandler<HTMLSelectElement> = useCallback(
-    (event) => {
-      setCamera(event.target.value)
+  const changeCamera = useCallback(
+    (value: string | null): void => {
+      const deviceId = value ?? ''
+      setCamera(deviceId)
       if (media.streams.camera) {
-        void media.start('camera', event.target.value)
+        void media.start('camera', deviceId)
       }
     },
     [media],
   )
-  const changeMicrophone: React.ChangeEventHandler<HTMLSelectElement> =
-    useCallback(
-      (event) => {
-        setMicrophone(event.target.value)
-        if (media.streams.microphone) {
-          void media.start('microphone', event.target.value)
-        }
-      },
-      [media],
-    )
+  const changeMicrophone = useCallback(
+    (value: string | null): void => {
+      const deviceId = value ?? ''
+      setMicrophone(deviceId)
+      if (media.streams.microphone) {
+        void media.start('microphone', deviceId)
+      }
+    },
+    [media],
+  )
   const toggleCamera = useCallback((): void => {
     if (media.streams.camera) {
       media.stop('camera')
@@ -95,23 +97,23 @@ export const DeviceControls: React.FC<{
             />
           )}
           {!media.streams.camera && <p className="hint">Камера выключена</p>}
-          <label>
-            Камера
-            <select
-              value={camera}
-              onChange={changeCamera}
-              disabled={media.busy.camera}
-            >
-              <option value="">По умолчанию</option>
-              {media.devices
-                .filter((d) => d.kind === 'videoinput')
-                .map((d, i) => (
-                  <option key={d.deviceId || i} value={d.deviceId}>
-                    {d.label || `Камера ${i + 1}`}
-                  </option>
-                ))}
-            </select>
-          </label>
+          <Select
+            label="Камера"
+            value={camera}
+            onChange={changeCamera}
+            disabled={media.busy.camera}
+            options={[
+              { id: '', text: 'По умолчанию' },
+              ...media.devices
+                .filter(
+                  (device) => device.kind === 'videoinput' && device.deviceId,
+                )
+                .map((device, index) => ({
+                  id: device.deviceId,
+                  text: device.label || `Камера ${index + 1}`,
+                })),
+            ]}
+          />
           <Button disabled={media.busy.camera} onClick={toggleCamera}>
             {media.busy.camera
               ? 'Подключение камеры…'
@@ -121,23 +123,23 @@ export const DeviceControls: React.FC<{
           </Button>
         </div>
         <div>
-          <label>
-            Микрофон
-            <select
-              value={microphone}
-              onChange={changeMicrophone}
-              disabled={media.busy.microphone}
-            >
-              <option value="">По умолчанию</option>
-              {media.devices
-                .filter((d) => d.kind === 'audioinput')
-                .map((d, i) => (
-                  <option key={d.deviceId || i} value={d.deviceId}>
-                    {d.label || `Микрофон ${i + 1}`}
-                  </option>
-                ))}
-            </select>
-          </label>
+          <Select
+            label="Микрофон"
+            value={microphone}
+            onChange={changeMicrophone}
+            disabled={media.busy.microphone}
+            options={[
+              { id: '', text: 'По умолчанию' },
+              ...media.devices
+                .filter(
+                  (device) => device.kind === 'audioinput' && device.deviceId,
+                )
+                .map((device, index) => ({
+                  id: device.deviceId,
+                  text: device.label || `Микрофон ${index + 1}`,
+                })),
+            ]}
+          />
           <Button disabled={media.busy.microphone} onClick={toggleMicrophone}>
             {media.busy.microphone
               ? 'Подключение микрофона…'
