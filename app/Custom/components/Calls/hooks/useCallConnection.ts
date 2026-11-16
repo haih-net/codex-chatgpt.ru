@@ -3,6 +3,7 @@ import type { JoinCallRoomMutation } from 'app/gql/generated'
 import type { CallMediaKind } from './useCallMedia'
 import type {
   CallConnectionStatus,
+  CallPeer,
   CallMediaStatus,
   CallSignal,
 } from '../interfaces'
@@ -15,6 +16,7 @@ export type CallSession = NonNullable<JoinCallRoomMutation['joinCallRoom']>
 export interface RemoteCallPeer {
   id: string
   name: string
+  image: string | null
   streams: Record<CallMediaKind, MediaStream | null>
   media: CallMediaStatus
   signalingConnected: boolean
@@ -39,9 +41,11 @@ export function useCallConnection(
   onDisconnect: () => void,
 ): {
   peers: RemoteCallPeer[]
+  self: CallPeer | null
   status: CallConnectionStatus
   error: string
 } {
+  const [self, setSelf] = useState<CallPeer | null>(null)
   const [peers, setPeers] = useState<RemoteCallPeer[]>([])
   const [status, setStatus] = useState<CallConnectionStatus>({
     phase: 'connecting',
@@ -66,6 +70,7 @@ export function useCallConnection(
     let localId = ''
     const runtimes: Map<string, PeerRuntime> = new Map()
     const names: Map<string, string> = new Map()
+    const images: Map<string, string | null> = new Map()
     const retiredConnections: Map<string, Set<string>> = new Map()
     let epoch = ''
     let iceServers: RTCIceServer[] = session.iceServers.map((server) => ({
@@ -147,8 +152,12 @@ export function useCallConnection(
       name: string,
       connected = true,
       connectionId = '',
+      image: string | null = null,
     ): PeerRuntime => {
       names.set(id, name)
+      if (image !== null || !images.has(id)) {
+        images.set(id, image)
+      }
       const existing = runtimes.get(id)
       if (existing) {
         return existing
@@ -171,6 +180,7 @@ export function useCallConnection(
         {
           id,
           name,
+          image: images.get(id) ?? null,
           streams: { microphone: null, camera: null, screen: null },
           media: { microphone: false, camera: false, screen: false },
           state: 'new',
@@ -368,6 +378,7 @@ export function useCallConnection(
         }
         switch (msg.type) {
           case 'welcome': {
+            setSelf(msg.self ?? null)
             const returning = Boolean(localId)
             // A server restart loses presence, but the signed session keeps our identity.
             if (
@@ -389,7 +400,7 @@ export function useCallConnection(
             }
             for (const p of msg.peers) {
               const existing = runtimes.has(p.id)
-              const peer = add(p.id, p.name, p.connected)
+              const peer = add(p.id, p.name, p.connected, '', p.image ?? null)
               peer.signalingConnected = p.connected
               update(p.id, { signalingConnected: p.connected })
               if (existing) {
@@ -402,7 +413,13 @@ export function useCallConnection(
             break
           }
           case 'joined':
-            add(msg.peer.id, msg.peer.name, msg.peer.connected)
+            add(
+              msg.peer.id,
+              msg.peer.name,
+              msg.peer.connected,
+              '',
+              msg.peer.image ?? null,
+            )
             break
           case 'peer-status': {
             const peer = runtimes.get(msg.id)
@@ -418,6 +435,7 @@ export function useCallConnection(
           case 'left':
             remove(msg.id)
             names.delete(msg.id)
+            images.delete(msg.id)
             retiredConnections.delete(msg.id)
             break
           case 'settings':
@@ -457,5 +475,5 @@ export function useCallConnection(
       runtimes.clear()
     }
   }, [session])
-  return { peers, status, error }
+  return { peers, self, status, error }
 }

@@ -4,6 +4,9 @@ import { Button } from '../Button'
 import type { CallMedia } from './hooks/useCallMedia'
 import { useCallConnection, type CallSession } from './hooks/useCallConnection'
 import { MediaView } from './MediaView'
+import { useAppContext } from '../AppContext'
+import { UserAvatar } from '../UserAvatar'
+import { KickCallParticipant } from './KickParticipant'
 import { ConnectionStatus } from './ConnectionStatus'
 const states: Record<RTCPeerConnectionState, string> = {
   new: 'Подключение',
@@ -19,7 +22,8 @@ export const ActiveCall: React.FC<{
   onLeave: () => void
   onSettings: () => void
 }> = ({ session, media, onLeave, onSettings }) => {
-  const { peers, status, error } = useCallConnection(
+  const { user } = useAppContext() ?? {}
+  const { peers, self, status, error } = useCallConnection(
     session,
     media.streams,
     onSettings,
@@ -35,6 +39,19 @@ export const ActiveCall: React.FC<{
   return (
     <div className="panel">
       <h2>Участники: {peers.length + 1}</h2>
+      <p>
+        <UserAvatar
+          user={
+            user ?? {
+              fullname: self?.name || 'Гость',
+              username: null,
+              image: self?.image ?? null,
+            }
+          }
+          size={48}
+        />{' '}
+        Вы
+      </p>
       <ConnectionStatus status={status} onRejoin={onLeave} />
       {!session.iceServers.some((server) =>
         server.urls.some((url) => url.startsWith('turn')),
@@ -69,7 +86,22 @@ export const ActiveCall: React.FC<{
       <div className="grid">
         {peers.map((peer) => (
           <article key={peer.id} className="panel">
-            <h3>{peer.name}</h3>
+            <h3>
+              <UserAvatar
+                user={{
+                  fullname: peer.name,
+                  username: null,
+                  image: peer.image,
+                }}
+                size={48}
+              />{' '}
+              {peer.name}
+            </h3>
+            <KickCallParticipant
+              roomId={session.id}
+              participantId={peer.id}
+              name={peer.name}
+            />
             <p>{states[peer.state]}</p>
             {!peer.signalingConnected && (
               <p className="hint">Участник восстанавливает связь с сервером.</p>

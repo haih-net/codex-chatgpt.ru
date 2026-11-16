@@ -34,6 +34,7 @@ describe('call signaling sessions', () => {
     await db.schema.createTable('User', (table) => {
       table.string('id').primary()
       table.string('status')
+      table.string('image')
     })
     await db('CallRoom').insert({
       id: 'room',
@@ -159,6 +160,41 @@ describe('call signaling sessions', () => {
     closed.send(JSON.stringify({ type: 'join', token: welcome.sessionToken }))
     expect(await closure).toEqual({ type: 'closed' })
   })
+  it.each([false, true])(
+    'kicks a session without revoking its token (disconnected: %s)',
+    async (disconnected) => {
+      const first = await join()
+      const observer = await join()
+      if (disconnected) {
+        const offline = message(observer.socket)
+        first.socket.close()
+        expect(await offline).toMatchObject({
+          type: 'peer-status',
+          connected: false,
+        })
+      }
+      const removed = message(observer.socket)
+      const closed = disconnected ? undefined : once(first.socket, 'close')
+      callEvents.emit('kick', 'room', first.welcome.id)
+      expect(await removed).toEqual({ type: 'left', id: first.welcome.id })
+      if (closed) {
+        expect((await closed)[0]).toBe(1008)
+      }
+      const newcomer = await join()
+      expect(newcomer.welcome.peers.map((peer) => peer.id)).not.toContain(
+        first.welcome.id,
+      )
+      const resumed = await open()
+      const result = message(resumed)
+      resumed.send(
+        JSON.stringify({ type: 'join', token: first.welcome.sessionToken }),
+      )
+      expect(await result).toMatchObject({
+        type: 'welcome',
+        id: first.welcome.id,
+      })
+    },
+  )
   it('keeps signed sessions valid without expiry and rejects tampering', () => {
     const session = {
       id: 'session',

@@ -1,3 +1,4 @@
+import { CallRoomList } from 'app/Custom/components/Calls/RoomList'
 import { AuthModal } from 'app/Custom/components/Auth/AuthModal'
 import { useCallback, useState } from 'react'
 import { Button } from 'app/Custom/components/Button'
@@ -61,6 +62,7 @@ export const CallsPage: React.FC = () => {
           </p>
         )}
       </div>
+      {user?.sudo && <CallRoomList />}
       <AuthModal isOpen={authOpen} onClose={closeAuth} />
     </CallsStyled>
   )

@@ -37,3 +37,19 @@ mutation joinCallRoom($id: ID!, $data: JoinCallRoomInput!) {
     }
   }
 }
+
+query callRooms {
+  callRooms {
+    ...CallRoomNoNesting
+  }
+}
+mutation deleteCallRoom($id: ID!) {
+  deleteCallRoom(id: $id) {
+    ...CallRoomNoNesting
+  }
+}
+mutation kickCallRoomParticipant($id: ID!, $participantId: ID!) {
+  kickCallRoomParticipant(id: $id, participantId: $participantId) {
+    ...CallRoomNoNesting
+  }
+}

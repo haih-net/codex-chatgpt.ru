@@ -16,7 +16,9 @@ interface CallClient {
   roomId: string
   name: string
   userId: string | null
+  image: string | null
   socket: WebSocket
+  disconnectTimer?: ReturnType<typeof setTimeout>
   alive: boolean
   disconnectedAt: number | null
 }
@@ -42,6 +44,7 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
     if (clients.get(client.id) !== client) {
       return
     }
+    clearTimeout(client.disconnectTimer)
     clients.delete(client.id)
     broadcast(client.roomId, { type: 'left', id: client.id })
   }
@@ -68,6 +71,19 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
       }
     }
   }
+  const kick = (roomId: string, participantId: string): void => {
+    const peer = clients.get(participantId)
+    if (peer?.roomId !== roomId) {
+      return
+    }
+    send(peer.socket, {
+      type: 'error',
+      message: 'Администратор исключил вас из звонка.',
+    })
+    remove(peer)
+    peer.socket.close(1008, 'Participant removed')
+  }
+  callEvents.on('kick', kick)
   callEvents.on('closed', closeRoom)
   callEvents.on('settings', settings)
   // Vite handles upgrades on its own HMR path.
@@ -116,6 +132,12 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
         !shuttingDown
       ) {
         client.disconnectedAt = Date.now()
+        const disconnected = client
+        client.disconnectTimer = setTimeout(
+          () => remove(disconnected),
+          10 * 60 * 1000,
+        )
+        client.disconnectTimer.unref()
         broadcast(
           client.roomId,
           { type: 'peer-status', id: client.id, connected: false },
@@ -136,13 +158,15 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
           }
           joining = true
           const session: CallSession = readCallSessionToken(msg.token)
+          let image: string | null = null
           if (session.userId) {
             const user = await db('User')
               .where({ id: session.userId })
-              .first('status')
+              .first('status', 'image')
             if (!user || user.status === 'blocked') {
               throw new Error('Доступ запрещён')
             }
+            image = user.image ?? null
           }
           const room = await getCallRoom(db, session.roomId)
           if (room.closed) {
@@ -157,8 +181,10 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
             return
           }
           const previous = clients.get(session.id)
+          clearTimeout(previous?.disconnectTimer)
           client = {
             ...session,
+            image,
             socket,
             alive: true,
             disconnectedAt: null,
@@ -168,6 +194,7 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
             .map((p) => ({
               id: p.id,
               name: p.name,
+              image: p.image,
               connected: p.disconnectedAt === null,
             }))
           clients.set(client.id, client)
@@ -176,6 +203,12 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
           send(socket, {
             type: 'welcome',
             id: client.id,
+            self: {
+              id: client.id,
+              name: client.name,
+              image: client.image,
+              connected: true,
+            },
             peers,
             epoch,
             sessionToken: createCallSessionToken({
@@ -192,7 +225,12 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
               ? { type: 'peer-status', id: client.id, connected: true }
               : {
                   type: 'joined',
-                  peer: { id: client.id, name: client.name, connected: true },
+                  peer: {
+                    id: client.id,
+                    name: client.name,
+                    image: client.image,
+                    connected: true,
+                  },
                 },
             client.id,
           )
@@ -296,10 +334,14 @@ export function setupCallSignaling(server: Server, db: Knex): () => void {
     shuttingDown = true
     clearInterval(heartbeat)
     server.off('upgrade', onUpgrade)
+    callEvents.off('kick', kick)
     callEvents.off('closed', closeRoom)
     callEvents.off('settings', settings)
     for (const socket of wss.clients) {
       socket.terminate()
+    }
+    for (const client of clients.values()) {
+      clearTimeout(client.disconnectTimer)
     }
     clients.clear()
     wss.close()

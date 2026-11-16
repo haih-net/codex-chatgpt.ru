@@ -19,9 +19,11 @@ export function createCallSignaling(options: {
   let attempt = 0
   let lastMessage = 0
   let retryTimer: ReturnType<typeof setTimeout> | undefined
+  let recoveryDeadline: ReturnType<typeof setTimeout> | undefined
   let heartbeat: ReturnType<typeof setInterval> | undefined
   const clearTimers = (): void => {
     clearTimeout(retryTimer)
+    clearTimeout(recoveryDeadline)
     clearInterval(heartbeat)
   }
   const publish = (
@@ -54,6 +56,16 @@ export function createCallSignaling(options: {
   const lost = (): void => {
     if (disposed || stopped) {
       return
+    }
+    if (!recoveryDeadline) {
+      recoveryDeadline = setTimeout(
+        () => {
+          stop(
+            'Не удалось восстановить связь за 10 минут. Войдите в звонок заново.',
+          )
+        },
+        10 * 60 * 1000,
+      )
     }
     clearInterval(heartbeat)
     detach(false)
@@ -112,7 +124,7 @@ export function createCallSignaling(options: {
       }
       lastMessage = Date.now()
       if (message.type === 'closed') {
-        stop('Создатель завершил звонок.')
+        stop('Звонок завершён или удалён.')
         return
       }
       if (message.type === 'error') {
@@ -120,6 +132,8 @@ export function createCallSignaling(options: {
         return
       }
       if (message.type === 'welcome') {
+        clearTimeout(recoveryDeadline)
+        recoveryDeadline = undefined
         ready = true
         sessionToken = message.sessionToken
         publish('connected', 'В комнате · связь с сервером установлена')

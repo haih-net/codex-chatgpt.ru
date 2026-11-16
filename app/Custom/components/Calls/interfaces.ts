@@ -14,11 +14,13 @@ export interface CallPeer {
   id: string
   name: string
   connected: boolean
+  image?: string | null
 }
 export type CallServerMessage =
   | {
       type: 'welcome'
       id: string
+      self?: CallPeer
       peers: CallPeer[]
       epoch: string
       sessionToken: string
