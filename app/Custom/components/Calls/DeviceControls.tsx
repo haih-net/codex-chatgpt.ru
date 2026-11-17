@@ -1,5 +1,6 @@
 import { Select } from '../controls/Select'
 import { useCallback } from 'react'
+import { VideoOff, Video, Mic, MicOff, Volume2 } from 'lucide-react'
 import type * as React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '../Button'
@@ -9,7 +10,19 @@ import { MicrophoneLevel } from './MicrophoneLevel'
 export const DeviceControls: React.FC<{
   media: CallMedia
   cameraPreview?: React.ReactNode
-}> = ({ media, cameraPreview }) => {
+  compact?: boolean
+}> = ({ media, cameraPreview, compact = false }) => {
+  const [tab, setTab] = useState<'camera' | 'microphone' | 'sound'>('camera')
+  const selectTab = useCallback<React.MouseEventHandler<HTMLButtonElement>>(
+    (event) => {
+      const next = event.currentTarget.dataset.tab
+      if (next === 'camera' || next === 'microphone' || next === 'sound') {
+        setTab(next)
+      }
+    },
+    [],
+  )
+
   const [microphone, setMicrophone] = useState('')
   const [camera, setCamera] = useState('')
   const [soundError, setSoundError] = useState('')
@@ -90,10 +103,38 @@ export const DeviceControls: React.FC<{
   }, [media, microphone])
 
   return (
-    <div className="panel">
+    <div className="panel device-controls">
       <h2>Камера и микрофон</h2>
-      <div className="grid">
-        <div>
+      {compact && (
+        <div className="device-tabs" role="group" aria-label="Устройство">
+          <button
+            type="button"
+            data-tab="camera"
+            onClick={selectTab}
+            aria-pressed={tab === 'camera'}
+          >
+            Камера
+          </button>
+          <button
+            type="button"
+            data-tab="microphone"
+            onClick={selectTab}
+            aria-pressed={tab === 'microphone'}
+          >
+            Микрофон
+          </button>
+          <button
+            type="button"
+            data-tab="sound"
+            onClick={selectTab}
+            aria-pressed={tab === 'sound'}
+          >
+            Динамики
+          </button>
+        </div>
+      )}
+      {!compact && (
+        <div className="device-preview">
           {cameraPreview ?? (
             <MediaView
               stream={media.streams.camera}
@@ -101,7 +142,54 @@ export const DeviceControls: React.FC<{
               label="Изображение с вашей камеры"
             />
           )}
-          {!media.streams.camera && <p className="hint">Камера выключена</p>}
+          {!media.streams.camera && !cameraPreview && (
+            <div className="preview-off">
+              <VideoOff size={36} aria-hidden="true" />
+              <p>Камера выключена</p>
+            </div>
+          )}
+        </div>
+      )}
+      <div className="actions device-toggles">
+        {(!compact || tab === 'camera') && (
+          <Button
+            disabled={media.busy.camera}
+            onClick={toggleCamera}
+            aria-pressed={Boolean(media.streams.camera)}
+          >
+            {media.streams.camera ? (
+              <Video size={18} />
+            ) : (
+              <VideoOff size={18} />
+            )}
+            {media.busy.camera
+              ? 'Подключение камеры…'
+              : media.streams.camera
+                ? 'Выключить камеру'
+                : 'Включить камеру'}
+          </Button>
+        )}
+        {(!compact || tab === 'microphone') && (
+          <Button
+            disabled={media.busy.microphone}
+            onClick={toggleMicrophone}
+            aria-pressed={Boolean(media.streams.microphone)}
+          >
+            {media.streams.microphone ? (
+              <Mic size={18} />
+            ) : (
+              <MicOff size={18} />
+            )}
+            {media.busy.microphone
+              ? 'Подключение микрофона…'
+              : media.streams.microphone
+                ? 'Выключить микрофон'
+                : 'Включить микрофон'}
+          </Button>
+        )}
+      </div>
+      <div className="device-selects">
+        {(!compact || tab === 'camera') && (
           <Select
             label="Камера"
             value={camera}
@@ -119,15 +207,8 @@ export const DeviceControls: React.FC<{
                 })),
             ]}
           />
-          <Button disabled={media.busy.camera} onClick={toggleCamera}>
-            {media.busy.camera
-              ? 'Подключение камеры…'
-              : media.streams.camera
-                ? 'Выключить камеру'
-                : 'Включить камеру'}
-          </Button>
-        </div>
-        <div>
+        )}
+        {(!compact || tab === 'microphone') && (
           <Select
             label="Микрофон"
             value={microphone}
@@ -145,15 +226,15 @@ export const DeviceControls: React.FC<{
                 })),
             ]}
           />
-          <Button disabled={media.busy.microphone} onClick={toggleMicrophone}>
-            {media.busy.microphone
-              ? 'Подключение микрофона…'
-              : media.streams.microphone
-                ? 'Выключить микрофон'
-                : 'Включить микрофон'}
-          </Button>
-          <MicrophoneLevel stream={media.streams.microphone} />
+        )}
+      </div>
+      {(!compact || tab === 'microphone') && (
+        <MicrophoneLevel stream={media.streams.microphone} />
+      )}
+      {(!compact || tab === 'sound') && (
+        <>
           <Button variant="secondary" onClick={testSound}>
+            <Volume2 size={18} />
             Проверить динамики
           </Button>
           <p className="hint">
@@ -162,8 +243,8 @@ export const DeviceControls: React.FC<{
             чтобы избежать эха.
           </p>
           {soundError && <p role="alert">{soundError}</p>}
-        </div>
-      </div>
+        </>
+      )}
       {media.error && <p role="alert">{media.error}</p>}
     </div>
   )

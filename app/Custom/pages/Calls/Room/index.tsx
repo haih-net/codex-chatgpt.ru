@@ -8,7 +8,7 @@ import {
   useUpdateCallRoomMutation,
 } from 'app/gql/generated'
 import { useAppContext } from 'app/Custom/components/AppContext'
-import { CallsStyled } from 'app/Custom/components/Calls/styles'
+import { CallRoomStyled } from './styles'
 import { useCallMedia } from 'app/Custom/components/Calls/hooks/useCallMedia'
 import type { CallSession } from 'app/Custom/components/Calls/hooks/useCallConnection'
 import { DeviceControls } from 'app/Custom/components/Calls/DeviceControls'
@@ -97,22 +97,86 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
   const requestClose = useCallback((): void => setConfirmClose(true), [])
   if (loading && !room) {
     return (
-      <CallsStyled>
+      <CallRoomStyled>
         <p>Загрузка комнаты…</p>
-      </CallsStyled>
+      </CallRoomStyled>
     )
   }
   if (!room) {
     return (
-      <CallsStyled>
+      <CallRoomStyled>
         <h1>Комната недоступна</h1>
         <p role="alert">{error?.message ?? 'Комната не найдена'}</p>
         <Link to="/calls">К видеозвонкам</Link>
-      </CallsStyled>
+      </CallRoomStyled>
+    )
+  }
+  const roomSettings = (
+    <details className="panel" open={Boolean(session)}>
+      <summary>Настройки комнаты</summary>
+      {!confirmClose && (
+        <CallRoomForm
+          key={`${room.title}:${room.authenticatedOnly}:${room.hasAccessCode}`}
+          editing
+          initial={{
+            title: room.title ?? '',
+            authenticatedOnly: Boolean(room.authenticatedOnly),
+          }}
+          onSave={save}
+        />
+      )}
+      <div className="actions">
+        {confirmClose ? (
+          <>
+            <p>Завершить звонок для всех и закрыть комнату?</p>
+            <Button
+              variant="danger"
+              disabled={closing.loading}
+              onClick={endRoom}
+            >
+              Да, завершить для всех
+            </Button>
+            <Button variant="secondary" onClick={cancelClose}>
+              Отмена
+            </Button>
+          </>
+        ) : (
+          <Button variant="danger" onClick={requestClose}>
+            Завершить звонок для всех
+          </Button>
+        )}
+      </div>
+    </details>
+  )
+
+  if (session && !room.closed) {
+    return (
+      <CallRoomStyled data-active="true">
+        <ActiveCall
+          session={session}
+          media={media}
+          onLeave={leave}
+          onSettings={refresh}
+          title={room.title ?? 'Звонок'}
+          invitation={
+            <CallInvitation
+              roomId={id}
+              code={code}
+              hasCode={Boolean(room.hasAccessCode)}
+            />
+          }
+          roomSettings={
+            room.isOwner || (user?.sudo && user.status === 'active')
+              ? roomSettings
+              : undefined
+          }
+          notice={notice}
+        />
+      </CallRoomStyled>
     )
   }
   return (
-    <CallsStyled>
+    <CallRoomStyled className="room-page">
       <nav>
         <Link to="/calls">Видеозвонки</Link>
         <Link to="/calls/devices">Проверка устройств</Link>
@@ -128,16 +192,13 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
         <p role="status">Звонок завершён. Комната закрыта.</p>
       ) : (
         <>
-          {session ? (
-            <ActiveCall
-              session={session}
-              media={media}
-              onLeave={leave}
-              onSettings={refresh}
-            />
-          ) : (
-            <div className="panel">
-              <h2>Войти в комнату</h2>
+          <div className="prejoin-layout">
+            <div className="prejoin-preview">
+              <DeviceControls media={media} />
+            </div>
+            <div className="panel join-panel">
+              <span className="eyebrow">Всё готово к занятию?</span>
+              <h2>Присоединиться к уроку</h2>
               {userLoading ? (
                 <p>Загрузка…</p>
               ) : room.authenticatedOnly && !user ? (
@@ -161,53 +222,23 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
                 Можно войти без камеры и микрофона и включить их позже.
               </p>
             </div>
-          )}
-          <DeviceControls media={media} />
-          <CallInvitation
-            roomId={id}
-            code={code}
-            hasCode={Boolean(room.hasAccessCode)}
-          />
-          {(room.isOwner || (user?.sudo && user.status === 'active')) && (
-            <details className="panel">
-              <summary>Настройки комнаты</summary>
-              <CallRoomForm
-                key={`${room.title}:${room.authenticatedOnly}:${room.hasAccessCode}`}
-                editing
-                initial={{
-                  title: room.title ?? '',
-                  authenticatedOnly: Boolean(room.authenticatedOnly),
-                }}
-                onSave={save}
-              />
-              <div className="actions">
-                {confirmClose ? (
-                  <>
-                    <p>Завершить звонок для всех и закрыть комнату?</p>
-                    <Button
-                      variant="danger"
-                      disabled={closing.loading}
-                      onClick={endRoom}
-                    >
-                      Да, завершить для всех
-                    </Button>
-                    <Button variant="secondary" onClick={cancelClose}>
-                      Отмена
-                    </Button>
-                  </>
-                ) : (
-                  <Button variant="danger" onClick={requestClose}>
-                    Завершить звонок для всех
-                  </Button>
-                )}
-              </div>
-            </details>
-          )}
+          </div>
+
+          <details className="panel invitation-panel">
+            <summary>Пригласить на занятие</summary>
+            <CallInvitation
+              roomId={id}
+              code={code}
+              hasCode={Boolean(room.hasAccessCode)}
+            />
+          </details>
+          {(room.isOwner || (user?.sudo && user.status === 'active')) &&
+            roomSettings}
         </>
       )}
       {notice && <p role="status">{notice}</p>}
       <AuthModal isOpen={authOpen} onClose={closeAuth} />
-    </CallsStyled>
+    </CallRoomStyled>
   )
 }
 

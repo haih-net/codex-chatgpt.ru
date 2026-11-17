@@ -125,10 +125,8 @@ export const CallRoomListItem: React.FC<{
               authenticatedOnly: room.authenticatedOnly,
             }}
             onSave={save}
+            onCancel={cancel}
           />
-          <Button size="small" variant="secondary" onClick={cancel}>
-            Отмена
-          </Button>
         </div>
       )}
       {(action === 'close' || action === 'delete') && (
