@@ -21,6 +21,7 @@ export const Popover: React.FC<PopoverProps> = ({
     },
     state,
   )
+
   useLayoutEffect(() => {
     const anchor = triggerRef.current
     const popup = popoverRef.current
@@ -33,6 +34,7 @@ export const Popover: React.FC<PopoverProps> = ({
         `${anchor.getBoundingClientRect().width}px`,
       )
     }
+
     resize()
     const observer = new ResizeObserver(resize)
     observer.observe(anchor)

@@ -34,6 +34,7 @@ export const CallRoomListItem: React.FC<{
     },
     [],
   )
+
   const save = useCallback(
     async (data: CallRoomFormData): Promise<void> => {
       await update({ variables: { id: room.id, data } })
@@ -43,6 +44,7 @@ export const CallRoomListItem: React.FC<{
     },
     [update, room.id, onRefresh],
   )
+
   const confirm = useCallback(async (): Promise<void> => {
     setNotice('')
     try {
@@ -61,6 +63,7 @@ export const CallRoomListItem: React.FC<{
       )
     }
   }, [action, remove, close, room.id, onRefresh])
+
   return (
     <li>
       <div className="room-row">

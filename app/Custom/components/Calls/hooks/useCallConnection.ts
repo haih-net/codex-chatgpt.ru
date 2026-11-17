@@ -53,6 +53,7 @@ export function useCallConnection(
     nextAttemptAt: null,
     message: 'Подключение…',
   })
+
   const transport = useRef<CallSignaling | null>(null)
   const [error, setError] = useState('')
   const streamsRef = useRef(streams)
@@ -78,11 +79,13 @@ export function useCallConnection(
       username: server.username ?? undefined,
       credential: server.credential ?? undefined,
     }))
+
     const report = (err: unknown): void => {
       if (!disposed) {
         setError(err instanceof Error ? err.message : 'Ошибка соединения')
       }
     }
+
     const send = (target: string, payload: CallSignal): boolean => {
       const peer = runtimes.get(target)
       const sent =
@@ -93,11 +96,13 @@ export function useCallConnection(
           payload: { ...payload, connectionId: peer?.connectionId },
         }) ??
           false)
+
       if (!sent && peer && (payload.description || payload.candidate)) {
         peer.needsRecovery = true
       }
       return sent
     }
+
     const update = (id: string, patch: Partial<RemoteCallPeer>): void => {
       if (!disposed) {
         setPeers((prev) =>
@@ -105,11 +110,13 @@ export function useCallConnection(
         )
       }
     }
+
     const mediaStatus = (): CallMediaStatus => ({
       microphone: Boolean(streamsRef.current.microphone),
       camera: Boolean(streamsRef.current.camera),
       screen: Boolean(streamsRef.current.screen),
     })
+
     const replaceTracks = async (
       id: string,
       peer: PeerRuntime,
@@ -129,6 +136,7 @@ export function useCallConnection(
         send(id, { media: mediaStatus() })
       }
     }
+
     sync.current = () => {
       for (const [id, peer] of runtimes) {
         void replaceTracks(id, peer).catch(report)
@@ -147,6 +155,7 @@ export function useCallConnection(
         setPeers((prev) => prev.filter((p) => p.id !== id))
       }
     }
+
     const add = (
       id: string,
       name: string,
@@ -174,6 +183,7 @@ export function useCallConnection(
         needsRecovery: false,
         signalingConnected: connected,
       }
+
       runtimes.set(id, peer)
       setPeers((prev) => [
         ...prev,
@@ -252,6 +262,7 @@ export function useCallConnection(
       send(id, { media: mediaStatus() })
       return peer
     }
+
     const handleSignal = async (
       from: string,
       signal: CallSignal,
@@ -300,6 +311,7 @@ export function useCallConnection(
         const ready =
           !peer.makingOffer &&
           (pc.signalingState === 'stable' || peer.settingAnswer)
+
         const collision = signal.description.type === 'offer' && !ready
         peer.ignoreOffer = localId < from && collision
         if (peer.ignoreOffer) {
@@ -333,6 +345,7 @@ export function useCallConnection(
         }
       }
     }
+
     const recover = (id: string): void => {
       const peer = runtimes.get(id)
       if (!peer || !peer.signalingConnected) {
@@ -355,6 +368,7 @@ export function useCallConnection(
         void replaceTracks(id, peer).catch(report)
       }
     }
+
     const signaling = createCallSignaling({
       url: `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/api/calls/socket`,
       sessionToken: session.sessionToken ?? '',
@@ -461,6 +475,7 @@ export function useCallConnection(
         }
       },
     })
+
     transport.current = signaling
     return () => {
       disposed = true

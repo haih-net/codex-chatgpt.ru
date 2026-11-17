@@ -21,6 +21,7 @@ export const Header: React.FC = () => {
     openFeedback?.()
     setIsOpen(false)
   }, [openFeedback])
+
   const openChat = useOpenChatWithMessage()
   const handleOpenChat = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -36,6 +37,7 @@ export const Header: React.FC = () => {
       accountMenu.current.open = false
     }
   }, [])
+
   const toggleMenu = useCallback(() => setIsOpen((previous) => !previous), [])
   const handleBlur = useCallback((event: React.FocusEvent<HTMLElement>) => {
     if (
@@ -56,6 +58,7 @@ export const Header: React.FC = () => {
         toggle.current?.focus()
       }
     }
+
     const onPointer = (event: PointerEvent) => {
       if (
         event.target instanceof Node &&
@@ -64,12 +67,14 @@ export const Header: React.FC = () => {
         setIsOpen(false)
       }
     }
+
     const media = window.matchMedia(`(min-width: ${theme.breakpoints.sm}px)`)
     const onResize = () => {
       if (media.matches) {
         setIsOpen(false)
       }
     }
+
     document.addEventListener('keydown', onKey)
     document.addEventListener('pointerdown', onPointer)
     media.addEventListener('change', onResize)
@@ -90,12 +95,14 @@ export const Header: React.FC = () => {
         accountMenu.current.open = false
       }
     }
+
     const onEscape = (event: KeyboardEvent): void => {
       if (event.key === 'Escape' && accountMenu.current?.open) {
         accountMenu.current.open = false
         accountMenu.current.querySelector('summary')?.focus()
       }
     }
+
     document.addEventListener('pointerdown', closeAccount)
     document.addEventListener('keydown', onEscape)
     return () => {

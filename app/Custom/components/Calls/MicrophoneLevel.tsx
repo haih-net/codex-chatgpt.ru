@@ -23,9 +23,11 @@ export const MicrophoneLevel: React.FC<{ stream: MediaStream | null }> = ({
         const rms = Math.sqrt(
           values.reduce((sum, value) => sum + value * value, 0) / values.length,
         )
+
         setLevel(Math.min(100, Math.round(rms * 350)))
         frame = requestAnimationFrame(sample)
       }
+
       void context
         .resume()
         .catch(() =>

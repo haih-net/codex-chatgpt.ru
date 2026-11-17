@@ -8,6 +8,7 @@ export const CallRoomList: React.FC = () => {
   const { data, loading, error, refetch } = useCallRoomsQuery({
     fetchPolicy: 'network-only',
   })
+
   const refresh = useCallback(() => refetch(), [refetch])
   return (
     <CallRoomListStyled className="panel">

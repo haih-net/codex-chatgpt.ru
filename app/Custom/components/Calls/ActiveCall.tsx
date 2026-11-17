@@ -16,6 +16,7 @@ const states: Record<RTCPeerConnectionState, string> = {
   failed: 'Не удалось установить связь',
   closed: 'Соединение закрыто',
 }
+
 export const ActiveCall: React.FC<{
   session: CallSession
   media: CallMedia
@@ -29,6 +30,7 @@ export const ActiveCall: React.FC<{
     onSettings,
     media.stopAll,
   )
+
   const toggleScreen = useCallback((): void => {
     if (media.streams.screen) {
       media.stop('screen')
@@ -36,6 +38,7 @@ export const ActiveCall: React.FC<{
       void media.start('screen')
     }
   }, [media])
+
   return (
     <div className="panel">
       <h2>Участники: {peers.length + 1}</h2>

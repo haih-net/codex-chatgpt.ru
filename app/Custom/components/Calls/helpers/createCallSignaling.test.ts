@@ -60,6 +60,7 @@ describe('call signaling recovery', () => {
     socket.open()
     socket.receive({ type: 'welcome', sessionToken: 'established-resume' })
   }
+
   it('keeps media alive, shows an attempt and resumes with the refreshed token', () => {
     const first = FakeSocket.instances[0]
     welcome(first)

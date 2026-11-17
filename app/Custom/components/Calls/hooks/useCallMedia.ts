@@ -34,11 +34,13 @@ export function useCallMedia(): CallMedia {
     camera: null,
     screen: null,
   })
+
   const revisions = useRef<Record<CallMediaKind, number>>({
     microphone: 0,
     camera: 0,
     screen: 0,
   })
+
   const mounted = useRef(true)
   const [streams, setStreams] = useState(tracks.current)
   const [busy, setBusy] = useState<Record<CallMediaKind, boolean>>({
@@ -46,6 +48,7 @@ export function useCallMedia(): CallMedia {
     camera: false,
     screen: false,
   })
+
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
   const [error, setError] = useState('')
   const refresh = useCallback(async (): Promise<void> => {
@@ -60,6 +63,7 @@ export function useCallMedia(): CallMedia {
       }
     }
   }, [])
+
   const stop = useCallback((kind: CallMediaKind): void => {
     revisions.current[kind]++
     tracks.current[kind]?.getTracks().forEach((track) => track.stop())
@@ -69,11 +73,13 @@ export function useCallMedia(): CallMedia {
       setBusy((prev) => ({ ...prev, [kind]: false }))
     }
   }, [])
+
   const stopAll = useCallback((): void => {
     stop('microphone')
     stop('camera')
     stop('screen')
   }, [stop])
+
   const start = useCallback(
     async (kind: CallMediaKind, deviceId?: string): Promise<void> => {
       const revision = ++revisions.current[kind]
@@ -114,6 +120,7 @@ export function useCallMedia(): CallMedia {
                       audio: false,
                     },
               )
+
         if (!mounted.current || revision !== revisions.current[kind]) {
           stream.getTracks().forEach((track) => track.stop())
           return
@@ -141,6 +148,7 @@ export function useCallMedia(): CallMedia {
     },
     [refresh, stop],
   )
+
   useEffect(() => {
     mounted.current = true
     void refresh()

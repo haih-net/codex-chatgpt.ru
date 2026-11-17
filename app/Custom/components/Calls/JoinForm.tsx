@@ -26,6 +26,7 @@ const schema: yup.ObjectSchema<FormData> = yup.object({
     .max(60, 'Максимум 60 символов'),
   accessCode: yup.string().nullable().max(64, 'Максимум 64 символа'),
 })
+
 export const JoinCallForm: React.FC<{
   roomId: string
   hasCode: boolean
@@ -40,6 +41,7 @@ export const JoinCallForm: React.FC<{
     resolver: yupResolver(schema),
     defaultValues: { name, accessCode: code },
   })
+
   useEffect(() => {
     form.setValue('accessCode', code)
   }, [code, form])
@@ -54,6 +56,7 @@ export const JoinCallForm: React.FC<{
     ),
     [id],
   )
+
   const renderCode: ControllerProps<FormData, 'accessCode'>['render'] =
     useCallback(
       ({ field }) => (
@@ -68,6 +71,7 @@ export const JoinCallForm: React.FC<{
       ),
       [id],
     )
+
   return (
     <FormProvider {...form}>
       <FormStyled

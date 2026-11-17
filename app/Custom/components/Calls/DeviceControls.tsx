@@ -50,6 +50,7 @@ export const DeviceControls: React.FC<{
       )
     }
   }, [])
+
   const changeCamera = useCallback(
     (value: string | null): void => {
       const deviceId = value ?? ''
@@ -60,6 +61,7 @@ export const DeviceControls: React.FC<{
     },
     [media],
   )
+
   const changeMicrophone = useCallback(
     (value: string | null): void => {
       const deviceId = value ?? ''
@@ -70,6 +72,7 @@ export const DeviceControls: React.FC<{
     },
     [media],
   )
+
   const toggleCamera = useCallback((): void => {
     if (media.streams.camera) {
       media.stop('camera')
@@ -77,6 +80,7 @@ export const DeviceControls: React.FC<{
       void media.start('camera', camera)
     }
   }, [media, camera])
+
   const toggleMicrophone = useCallback((): void => {
     if (media.streams.microphone) {
       media.stop('microphone')
@@ -84,6 +88,7 @@ export const DeviceControls: React.FC<{
       void media.start('microphone', microphone)
     }
   }, [media, microphone])
+
   return (
     <div className="panel">
       <h2>Камера и микрофон</h2>

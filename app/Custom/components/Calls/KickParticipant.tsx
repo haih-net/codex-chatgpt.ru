@@ -25,6 +25,7 @@ export const KickCallParticipant: React.FC<{
       )
     }
   }, [kick, roomId, participantId, name])
+
   if (!user?.sudo) {
     return null
   }

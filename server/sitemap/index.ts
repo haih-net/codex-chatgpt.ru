@@ -15,6 +15,7 @@ function escapeXml(value: string): string {
       '"': '&quot;',
       "'": '&apos;',
     }
+
     return entities[character]
   })
 }
@@ -34,6 +35,7 @@ ${Array.from(urls, ([url, item]) => {
   const lastmod = item.updatedAt
     ? `<lastmod>${new Date(item.updatedAt).toISOString()}</lastmod>`
     : ''
+
   return `  <url><loc>${escapeXml(url)}</loc>${lastmod}<priority>0.9</priority></url>`
 }).join('\n')}
 </urlset>`
@@ -50,6 +52,7 @@ async function generateSitemap(req: Request, res: Response): Promise<void> {
     )
     .whereNot('visibility', 'unpublished')
     .orderBy('updatedAt', 'desc')
+
   const xml = generateUrls([{ uri: '/' }, ...concepts], origin)
   res.set('Cache-Control', 'no-store').type('application/xml').send(xml)
 }

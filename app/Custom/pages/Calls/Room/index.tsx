@@ -25,6 +25,7 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
     fetchPolicy: 'network-only',
     pollInterval: 15000,
   })
+
   const room = data?.callRoom
   const [update] = useUpdateCallRoomMutation()
   const [close, closing] = useCloseCallRoomMutation()
@@ -51,6 +52,7 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
     setCode('')
     void refetch().catch(() => setNotice('Не удалось обновить настройки'))
   }, [refetch])
+
   const { stopAll } = media
   useEffect(() => {
     if (room?.closed) {
@@ -61,10 +63,12 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
     setSession(null)
     media.stopAll()
   }, [media])
+
   const join = useCallback((value: CallSession, accessCode: string): void => {
     setSession(value)
     setCode(accessCode)
   }, [])
+
   const save = useCallback(
     async (settings: CallRoomFormData): Promise<void> => {
       await update({ variables: { id, data: settings } })
@@ -76,6 +80,7 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
     },
     [update, id, refetch],
   )
+
   const endRoom = useCallback(async (): Promise<void> => {
     try {
       await close({ variables: { id } })
@@ -87,6 +92,7 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
       )
     }
   }, [close, id, leave, refetch])
+
   const cancelClose = useCallback((): void => setConfirmClose(false), [])
   const requestClose = useCallback((): void => setConfirmClose(true), [])
   if (loading && !room) {
@@ -204,6 +210,7 @@ const CallRoomView: React.FC<{ id: string }> = ({ id }) => {
     </CallsStyled>
   )
 }
+
 export const CallRoomPage: React.FC = () => {
   const { roomId = '' } = useParams()
   return <CallRoomView key={roomId} id={roomId} />

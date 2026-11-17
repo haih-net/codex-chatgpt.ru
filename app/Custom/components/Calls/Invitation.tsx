@@ -17,6 +17,7 @@ export const CallInvitation: React.FC<{
     (event) => event.target.select(),
     [],
   )
+
   const copy = useCallback(async (): Promise<void> => {
     try {
       await navigator.clipboard.writeText(url)
@@ -27,6 +28,7 @@ export const CallInvitation: React.FC<{
       )
     }
   }, [url])
+
   return (
     <div className="panel">
       <h2>Пригласить участников</h2>

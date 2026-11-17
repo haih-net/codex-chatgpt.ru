@@ -29,6 +29,7 @@ export const CallsPage: React.FC = () => {
     },
     [createRoom, navigate],
   )
+
   return (
     <CallsStyled>
       <nav>

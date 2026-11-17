@@ -14,6 +14,7 @@ export const AccessSelect: React.FC<AccessSelectProps> = ({ field, id }) => {
     (value: string | null): void => field.onChange(value === 'authenticated'),
     [field],
   )
+
   return (
     <Select
       {...field}

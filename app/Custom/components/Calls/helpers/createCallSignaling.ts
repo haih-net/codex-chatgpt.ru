@@ -26,11 +26,13 @@ export function createCallSignaling(options: {
     clearTimeout(recoveryDeadline)
     clearInterval(heartbeat)
   }
+
   const publish = (
     phase: CallConnectionStatus['phase'],
     message: string,
     nextAttemptAt: number | null = null,
   ): void => options.onStatus({ phase, message, attempt, nextAttemptAt })
+
   const detach = (leave: boolean): void => {
     const previous = socket
     socket = null
@@ -46,6 +48,7 @@ export function createCallSignaling(options: {
       previous.close()
     }
   }
+
   const stop = (message: string): void => {
     stopped = true
     clearTimers()
@@ -53,6 +56,7 @@ export function createCallSignaling(options: {
     publish('denied', message)
     options.onStopped()
   }
+
   const lost = (): void => {
     if (disposed || stopped) {
       return
@@ -81,6 +85,7 @@ export function createCallSignaling(options: {
       connect()
     }, delay)
   }
+
   const connect = (): void => {
     if (disposed || stopped) {
       return
@@ -159,6 +164,7 @@ export function createCallSignaling(options: {
       }
     }
   }
+
   connect()
   return {
     send: (message) => {

@@ -28,6 +28,7 @@ export const CallRoomForm: React.FC<{
       accessCode: undefined,
     },
   })
+
   const save = form.handleSubmit(async (data) => {
     setError('')
     try {
@@ -41,6 +42,7 @@ export const CallRoomForm: React.FC<{
       )
     }
   })
+
   const renderTitle: ControllerProps<CallRoomFormData, 'title'>['render'] =
     useCallback(
       ({ field }) => (
@@ -53,6 +55,7 @@ export const CallRoomForm: React.FC<{
       ),
       [id],
     )
+
   const renderAccess: ControllerProps<
     CallRoomFormData,
     'authenticatedOnly'
@@ -60,6 +63,7 @@ export const CallRoomForm: React.FC<{
     ({ field }) => <AccessSelect field={field} id={`${id}-access`} />,
     [id],
   )
+
   const renderCode: ControllerProps<CallRoomFormData, 'accessCode'>['render'] =
     useCallback(
       ({ field }) => (
@@ -74,9 +78,11 @@ export const CallRoomForm: React.FC<{
       ),
       [id],
     )
+
   const removeCode = useCallback((): void => {
     form.setValue('accessCode', '', { shouldDirty: true })
   }, [form])
+
   return (
     <FormProvider {...form}>
       <FormStyled onSubmit={save}>

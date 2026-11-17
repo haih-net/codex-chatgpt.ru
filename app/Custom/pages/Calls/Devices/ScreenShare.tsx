@@ -18,9 +18,11 @@ export const ScreenShare: React.FC<{ media: CallMedia }> = ({ media }) => {
   const start = useCallback((): void => {
     void media.start('screen')
   }, [media])
+
   const stop = useCallback((): void => {
     media.stop('screen')
   }, [media])
+
   const stream = media.streams.screen
   return (
     <section className="panel" aria-labelledby="screen-share-heading">
