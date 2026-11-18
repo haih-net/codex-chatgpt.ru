@@ -14,6 +14,7 @@ const colors = {
   foreground: '#27343e',
   background: '#ffffff',
   muted: '#9ca3af',
+  link: '#0042ad',
 
   // States
   success: '#10b981',

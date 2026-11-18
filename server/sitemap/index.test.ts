@@ -10,12 +10,15 @@ const { query, database } = vi.hoisted(() => {
     whereNot: vi.fn().mockReturnThis(),
     orderBy: vi.fn(),
   }
+
   const database = Object.assign(
     vi.fn(() => query),
     { raw: vi.fn() },
   )
+
   return { query, database }
 })
+
 vi.mock('../database', () => ({ db: database }))
 import { setupSitemap } from './index'
 
@@ -41,6 +44,7 @@ describe('Динамическая карта сайта', () => {
     const response = await fetch(`${origin}/sitemap.xml?check=1`, {
       headers: { 'X-Forwarded-Proto': 'https' },
     })
+
     expect(response.status).toBe(200)
     expect(response.headers.get('content-type')).toContain('application/xml')
     const xml = await response.text()
@@ -59,14 +63,40 @@ describe('Динамическая карта сайта', () => {
     expect(xml.match(/<url>/g)).toHaveLength(terms.length + 4)
     expect(xml).toContain(`<loc>${origin}/terms/subagent</loc>`)
     expect(xml).toContain(`<loc>${origin}/wiki/request-lifecycle</loc>`)
+    expect(xml).not.toContain(`<loc>${origin}/docs</loc>`)
+    expect(xml).not.toContain(`<loc>${origin}/docs/video-calls</loc>`)
     expect(xml).not.toContain('<lastmod>')
     expect(xml).not.toContain('/signin')
   })
 
+  it('исключает звонки и документацию, в том числе ссылки из базы', async () => {
+    const paths = [
+      '/calls',
+      '/calls/',
+      '/calls/devices',
+      '/calls/test-room',
+      '/docs',
+      '/docs/',
+      '/docs/video-calls',
+    ]
+
+    query.orderBy.mockResolvedValueOnce(
+      paths.flatMap((path) => [
+        { uri: path },
+        { uri: `${origin}${path}?source=test` },
+      ]),
+    )
+    const xml = await (await fetch(`${origin}/sitemap.xml`)).text()
+    expect(xml.match(/<url>/g)).toHaveLength(terms.length + 4)
+    for (const path of paths) {
+      expect(xml).not.toContain(`${origin}${path}`)
+    }
+  })
+
   it('читает базу заново, фильтрует публикации и экранирует XML', async () => {
     query.orderBy.mockResolvedValueOnce([
-      { uri: '/city/test?a=1&b=2', updatedAt: '2026-10-01T00:00:00Z' },
-      { uri: '/city/test?a=1&b=2', updatedAt: '2026-10-01T00:00:00Z' },
+      { uri: '/example?a=1&b=2', updatedAt: '2026-10-01T00:00:00Z' },
+      { uri: '/example?a=1&b=2', updatedAt: '2026-10-01T00:00:00Z' },
       { uri: 'https://other.example/test' },
     ])
     const response = await fetch(`${origin}/sitemap.xml`)
@@ -74,13 +104,13 @@ describe('Динамическая карта сайта', () => {
     expect(response.headers.get('cache-control')).toBe('no-store')
     expect(database).toHaveBeenCalledWith('KBConcept')
     expect(query.whereNot).toHaveBeenCalledWith('visibility', 'unpublished')
-    expect(xml).toContain('/city/test?a=1&amp;b=2</loc>')
+    expect(xml).toContain('/example?a=1&amp;b=2</loc>')
     expect(xml).toContain('<lastmod>2026-10-01T00:00:00.000Z</lastmod>')
     expect(xml.match(/<url>/g)).toHaveLength(terms.length + 5)
     expect(xml).not.toContain('other.example')
     query.orderBy.mockResolvedValueOnce([{ uri: '/new-page' }])
     const nextXml = await (await fetch(`${origin}/sitemap.xml`)).text()
     expect(nextXml).toContain('/new-page</loc>')
-    expect(nextXml).not.toContain('/city/test')
+    expect(nextXml).not.toContain('/example')
   })
 })

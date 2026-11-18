@@ -9,10 +9,6 @@ export const HtmlStyled = styled.html`
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   scroll-padding-top: 96px;
-  :focus-visible {
-    outline: 2px solid ${theme.colors.primary};
-    outline-offset: 4px;
-  }
   body {
     margin: 0;
   }

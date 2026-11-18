@@ -4,6 +4,8 @@ export default {
   ssr: true,
   prerender: [
     '/',
+    '/docs',
+    '/docs/video-calls',
     '/terms',
     ...terms.map((term) => `/terms/${term.id}`),
     '/wiki',

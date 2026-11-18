@@ -23,12 +23,14 @@ export const HeaderNavStyled = styled.nav`
     box-shadow: none;
     border-bottom: 0;
     align-items: center;
-    gap: 20px;
-    width: 100%;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
   }
 
   @media (min-width: ${theme.breakpoints.md}px) {
-    gap: 32px;
+    gap: 16px;
   }
 
   &[data-open='true'] {
@@ -48,32 +50,37 @@ export const HeaderNavStyled = styled.nav`
   }
 `
 
+export const HeaderLogoStyled = styled.img`
+  height: 24px;
+`
+
+export const HeaderInnerStyled = styled.div`
+  max-width: 1328px;
+  margin: auto;
+  min-height: 64px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  @media (min-width: ${theme.breakpoints.xs}px) {
+    padding: 16px 24px;
+    gap: 32px;
+  }
+
+  @media (min-width: ${theme.breakpoints.sm}px) {
+    min-height: 72px;
+    padding: 10px 40px;
+  }
+`
+
 export const HeaderStyled = styled.header`
   position: sticky;
   top: 0;
   z-index: 300;
   background: ${theme.backgrounds.page};
   border-bottom: 1px solid ${theme.colors.border};
-  .header-inner {
-    max-width: 1328px;
-    margin: auto;
-    min-height: 64px;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-
-    @media (min-width: ${theme.breakpoints.xs}px) {
-      padding: 16px 24px;
-      gap: 32px;
-    }
-
-    @media (min-width: ${theme.breakpoints.sm}px) {
-      min-height: 72px;
-      padding: 10px 40px;
-    }
-  }
 
   nav .ai-button {
     padding: 10px 16px;
@@ -89,8 +96,9 @@ export const HeaderStyled = styled.header`
     background: transparent;
     border: 1px solid ${theme.colors.border};
     border-radius: 10px;
-    width: 44px;
-    height: 44px;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
     align-items: center;
     justify-content: center;
     color: inherit;
@@ -100,25 +108,43 @@ export const HeaderStyled = styled.header`
     }
   }
 
-  .feedback-button,
-  .signin-link {
+  nav .feedback-button,
+  nav .signin-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 42px;
-    padding: 10px 16px;
-    border: 1px solid ${theme.colors.border};
-    border-radius: 10px;
-    color: ${theme.colors.text.primary};
-    background: ${theme.backgrounds.paper};
+    gap: 6px;
+    min-height: 36px;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: ${theme.colors.foreground};
     font: inherit;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
     text-decoration: none;
     cursor: pointer;
   }
-  .feedback-button:hover:not(:disabled),
+  .feedback-button:hover,
   .signin-link:hover {
     background: ${theme.backgrounds.hover};
+  }
+  .feedback-button:focus-visible,
+  .signin-link:focus-visible {
+    border-color: ${theme.colors.primary};
+  }
+  .feedback-button svg,
+  .signin-link svg {
+    flex-shrink: 0;
+  }
+  @media (max-width: ${theme.breakpoints.sm - 1}px) {
+    nav .feedback-button,
+    nav .signin-link {
+      min-height: 44px;
+    }
   }
   .account-menu {
     position: relative;
