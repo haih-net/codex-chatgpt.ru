@@ -54,32 +54,36 @@ export const HeaderNavStyled = styled.nav`
   }
 `
 
+export const HeaderLogoStyled = styled.img`
+  height: 24px;
+`
+
+export const HeaderInnerStyled = styled.div`
+  max-width: 1328px;
+  margin: auto;
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  @media (min-width: ${theme.breakpoints.xs}px) {
+    padding: 6px 24px;
+    gap: 16px;
+  }
+
+  @media (min-width: ${theme.breakpoints.sm}px) {
+    min-height: 56px;
+    padding: 6px 24px;
+  }
+`
+
 export const HeaderStyled = styled.header`
   position: sticky;
   top: 0;
   z-index: 300;
   background: ${theme.backgrounds.page};
   border-bottom: 1px solid ${theme.colors.border};
-  .header-inner {
-    max-width: 1328px;
-    margin: auto;
-    min-height: 56px;
-    padding: 6px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-
-    @media (min-width: ${theme.breakpoints.xs}px) {
-      padding: 6px 24px;
-      gap: 16px;
-    }
-
-    @media (min-width: ${theme.breakpoints.sm}px) {
-      min-height: 56px;
-      padding: 6px 24px;
-    }
-  }
 
   nav .ai-button {
     padding: 10px 16px;
@@ -107,25 +111,43 @@ export const HeaderStyled = styled.header`
     }
   }
 
-  .feedback-button,
-  .signin-link {
+  nav .feedback-button,
+  nav .signin-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 42px;
-    padding: 10px 16px;
-    border: 1px solid ${theme.colors.border};
-    border-radius: 10px;
-    color: ${theme.colors.text.primary};
-    background: white;
+    gap: 6px;
+    min-height: 36px;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: ${theme.colors.foreground};
     font: inherit;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
     text-decoration: none;
     cursor: pointer;
   }
   .feedback-button:hover,
   .signin-link:hover {
-    background: #eef1e9;
+    background: #f3f3f3;
+  }
+  .feedback-button:focus-visible,
+  .signin-link:focus-visible {
+    border-color: ${theme.colors.primary};
+  }
+  .feedback-button svg,
+  .signin-link svg {
+    flex-shrink: 0;
+  }
+  @media (max-width: ${theme.breakpoints.sm - 1}px) {
+    nav .feedback-button,
+    nav .signin-link {
+      min-height: 44px;
+    }
   }
   .account-menu {
     position: relative;
