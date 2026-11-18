@@ -23,12 +23,14 @@ export const HeaderNavStyled = styled.nav`
     box-shadow: none;
     border-bottom: 0;
     align-items: center;
-    gap: 20px;
-    width: 100%;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
   }
 
   @media (min-width: ${theme.breakpoints.md}px) {
-    gap: 32px;
+    gap: 16px;
   }
 
   &[data-open='true'] {
@@ -61,21 +63,21 @@ export const HeaderStyled = styled.header`
   .header-inner {
     max-width: 1328px;
     margin: auto;
-    min-height: 80px;
-    padding: 16px;
+    min-height: 56px;
+    padding: 6px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
 
     @media (min-width: ${theme.breakpoints.xs}px) {
-      padding: 16px 24px;
-      gap: 32px;
+      padding: 6px 24px;
+      gap: 16px;
     }
 
     @media (min-width: ${theme.breakpoints.sm}px) {
-      min-height: 96px;
-      padding: 18px 40px;
+      min-height: 56px;
+      padding: 6px 24px;
     }
   }
 
@@ -93,8 +95,9 @@ export const HeaderStyled = styled.header`
     background: transparent;
     border: 1px solid ${theme.colors.border};
     border-radius: 10px;
-    width: 44px;
-    height: 44px;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
     align-items: center;
     justify-content: center;
     color: inherit;

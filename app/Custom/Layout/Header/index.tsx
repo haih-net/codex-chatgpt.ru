@@ -7,6 +7,7 @@ import { SignOutButton } from '../../components/Auth/SignOutButton'
 import { theme } from '../../theme'
 import { useAppContext } from 'app/Custom/components/AppContext'
 import { UserAvatar } from 'app/Custom/components/UserAvatar'
+import { CallsHeader } from 'app/Custom/components/Calls/CallsHeader'
 import { SeparatorStyled } from 'app/Custom/components/Separator/styles'
 
 export const Header: React.FC = () => {
@@ -37,6 +38,10 @@ export const Header: React.FC = () => {
       accountMenu.current.open = false
     }
   }, [])
+
+  useEffect(() => {
+    closeMenu()
+  }, [location.key, closeMenu])
 
   const toggleMenu = useCallback(() => setIsOpen((previous) => !previous), [])
   const handleBlur = useCallback((event: React.FocusEvent<HTMLElement>) => {
@@ -249,6 +254,7 @@ export const Header: React.FC = () => {
               </Link>
             ))}
         </HeaderNavStyled>
+        <CallsHeader />
       </div>
     </HeaderStyled>
   )
