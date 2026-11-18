@@ -48,5 +48,7 @@ it.each([
       expect(link).toBeNull()
     }
   }
-  expect(screen.getByRole('link', { name: 'Главная' })).not.toBeNull()
+  expect(
+    screen.getByRole('link', { name: 'На главную' }).getAttribute('href'),
+  ).toBe('/')
 })

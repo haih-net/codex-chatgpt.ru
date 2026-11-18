@@ -34,10 +34,12 @@ export const ChatModal: React.FC<ChatModalProps> = ({
   const [windowElement, setWindowElement] = useState<HTMLDivElement | null>(
     null,
   )
+
   const [position, setPosition] = useState<{
     left: number
     top: number
   } | null>(null)
+
   const draggableRef = draggable.ref
   const setWindowRef = useCallback(
     (element: HTMLDivElement | null): void => {
