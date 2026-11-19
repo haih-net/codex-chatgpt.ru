@@ -1,0 +1,37 @@
+import type {
+  TermSource,
+  TermExercise,
+} from 'app/Custom/pages/Wiki/terms/interfaces'
+import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
+
+const sources: TermSource[] = [
+  {
+    path: 'codex-rs/protocol/src/models.rs',
+    symbol: 'ResponseItem::WebSearchCall',
+    purpose: 'Определяет вариант, его поля и правила сериализации.',
+  },
+]
+
+const exercise: TermExercise = {
+  title: 'найти тип и его уровень',
+  task: 'Найдите вариант в enum и проверьте атрибуты serde перед ним. Затем сравните его с записью сессии, если она есть.',
+  command: "rg -n -B 4 -A 14 'WebSearchCall' codex-rs/protocol/src/models.rs",
+  expected:
+    'ResponseItem::WebSearchCall и соответствующее wire-имя web_search_call.',
+  question:
+    'Доказывает ли наличие этого варианта в исходниках, что он встретился в конкретном запуске?',
+  answer:
+    'Нет. Исходники описывают поддерживаемую форму данных. Факт появления проверяют по файлу сессии или потоку событий конкретного запуска.',
+}
+
+export const metadata: WikiPageMetadata = {
+  termId: 'response-web-search-call',
+  title: 'Элемент web_search_call',
+  description:
+    'Элемент операции веб-поиска в модельной истории со статусом и необязательным action. Не совпадает с событиями интерфейса web_search_begin и web_search_end.',
+  intro:
+    'Элемент операции веб-поиска в модельной истории со статусом и необязательным action. Не совпадает с событиями интерфейса web_search_begin и web_search_end.',
+  sources,
+  exercise,
+  related: ['response-item', 'context'],
+}

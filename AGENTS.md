@@ -165,3 +165,7 @@ Record implemented decisions, their motivating needs, known limitations, and rep
 Use focused commits for coherent changes and versioned releases for reproducible milestones when requested as part of the workflow. Do not publish, deploy, or create remote releases merely because a local build succeeds.
 
 Постепенно оформляйте проверенные знания о реализации в русскоязычные страницы решений. Объём документации должен соответствовать сложности проекта.
+
+## Блоки кода в React
+
+Для вывода блоков кода и команд используйте компонент `Markdown` из `app/Custom/components/Markdown`. Передавайте код строкой в ограждённом Markdown-блоке с указанием языка (`bash`, `typescript`, `json` и т. п.; `text` для обычного текста). Не размечайте блоки вручную через `<pre><code>` и не создавайте отдельные компоненты рендеринга кода. Существующие подписи и оформление сохраняйте; для блока с подписью можно использовать `CodeBlockStyled` из `app/Custom/components/Markdown/styles` и `<figcaption>`. Встроенные в предложения имена команд и файлов можно оставлять в `<code>`.

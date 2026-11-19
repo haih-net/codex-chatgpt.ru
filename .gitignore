@@ -1,7 +1,7 @@
 storage/*
 uploads/*
 node_modules/
-build/
+/build
 .react-router/
 .env
 .env.*

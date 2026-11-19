@@ -19,3 +19,9 @@ docker/mailserver/mail-logs/
 docker/mailserver/config/
 
 docker/supabase/data/
+
+# Локальные данные лаборатории Codex
+/codex-lab/repos/
+/codex-lab/target/
+/codex-lab/bin/
+/codex-lab/projects/

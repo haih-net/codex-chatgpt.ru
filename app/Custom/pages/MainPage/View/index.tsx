@@ -1,6 +1,7 @@
 import type * as React from 'react'
 import { Link } from 'react-router'
-import { CodeBlock } from 'app/Custom/components/Markdown/CodeBlock'
+import { Markdown } from 'app/Custom/components/Markdown'
+import { CodeBlockStyled } from 'app/Custom/components/Markdown/styles'
 import { MainPageViewStyled } from './styles'
 
 export const MainPageView: React.FC = () => (
@@ -23,7 +24,9 @@ export const MainPageView: React.FC = () => (
           Скачать и запустить
         </a>
         <a href="#modes">Три режима работы ↓</a>
-        <Link to="/wiki/request-lifecycle">Разобраться в устройстве →</Link>
+        <Link to="/wiki/rust/core/request-lifecycle">
+          Разобраться в устройстве →
+        </Link>
       </nav>
     </header>
 
@@ -65,7 +68,7 @@ export const MainPageView: React.FC = () => (
       <p>
         Совпадение списка функций у разных продуктов ещё не означает одинакового
         качества. Результат зависит от сочетания модели и{' '}
-        <Link to="/terms/harness">обвязок</Link>: инструкций, подготовки
+        <Link to="/wiki/concepts/harness">обвязок</Link>: инструкций, подготовки
         контекста, инструментов и управления шагами работы.
       </p>
     </section>
@@ -101,9 +104,14 @@ export const MainPageView: React.FC = () => (
       <article className="mode">
         <p className="eyebrow">01 · Разовый запуск</p>
         <h3>Передать задачу и получить результат</h3>
-        <CodeBlock label="Неинтерактивный запуск">
-          {'codex exec "Изучи README.md и кратко опиши назначение проекта"'}
-        </CodeBlock>
+        <CodeBlockStyled>
+          <figcaption>Неинтерактивный запуск</figcaption>
+          <Markdown>
+            {'```bash\n' +
+              'codex exec "Изучи README.md и кратко опиши назначение проекта"' +
+              '\n```'}
+          </Markdown>
+        </CodeBlockStyled>
         <p>
           Codex принимает промпт, выполняет задачу и завершает процесс. Внутри
           одного запуска могут быть несколько обращений к модели и вызовов
@@ -113,13 +121,16 @@ export const MainPageView: React.FC = () => (
         <p>
           Для обработки результата программой есть вывод событий JSONL через
           <code> --json</code>. Подробнее —{' '}
-          <Link to="/terms/headless">неинтерактивный запуск</Link>.
+          <Link to="/wiki/concepts/headless">неинтерактивный запуск</Link>.
         </p>
       </article>
       <article className="mode">
         <p className="eyebrow">02 · TUI</p>
         <h3>Работать в диалоге прямо в терминале</h3>
-        <CodeBlock label="Терминальный интерфейс">{'codex'}</CodeBlock>
+        <CodeBlockStyled>
+          <figcaption>Терминальный интерфейс</figcaption>
+          <Markdown>{'```bash\n' + 'codex' + '\n```'}</Markdown>
+        </CodeBlockStyled>
         <p>
           TUI — текстовый пользовательский интерфейс в терминале. Вы ставите
           задачу, читаете ответы, уточняете требования и наблюдаете за работой
@@ -128,15 +139,16 @@ export const MainPageView: React.FC = () => (
         </p>
         <p>
           Историю и состояние этой работы разбираем в статье{' '}
-          <Link to="/terms/thread">«Поток или Тред»</Link>.
+          <Link to="/wiki/concepts/thread">«Поток или Тред»</Link>.
         </p>
       </article>
       <article className="mode">
         <p className="eyebrow">03 · Сервер для приложений</p>
         <h3>Встроить Codex в свой интерфейс или систему</h3>
-        <CodeBlock label="Запуск сервера приложений">
-          {'codex app-server'}
-        </CodeBlock>
+        <CodeBlockStyled>
+          <figcaption>Запуск сервера приложений</figcaption>
+          <Markdown>{'```bash\n' + 'codex app-server' + '\n```'}</Markdown>
+        </CodeBlockStyled>
         <p>
           App-server предоставляет программный интерфейс: ваше приложение
           создаёт потоки, передаёт задачи, получает события и обрабатывает
@@ -163,9 +175,12 @@ export const MainPageView: React.FC = () => (
         публикуются в официальном репозитории OpenAI. Если установлен Node.js с
         npm, CLI можно установить командой:
       </p>
-      <CodeBlock label="Установка Codex CLI">
-        {'npm install -g @openai/codex'}
-      </CodeBlock>
+      <CodeBlockStyled>
+        <figcaption>Установка Codex CLI</figcaption>
+        <Markdown>
+          {'```bash\n' + 'npm install -g @openai/codex' + '\n```'}
+        </Markdown>
+      </CodeBlockStyled>
       <p>
         Затем откройте рабочую папку в терминале и запустите <code>codex</code>.
         Подключите аккаунт ChatGPT либо настройте доступ к выбранному
@@ -190,7 +205,7 @@ export const MainPageView: React.FC = () => (
       <h2 id="reading-title">Разобраться, что происходит внутри</h2>
       <p>
         Начните с разбора{' '}
-        <Link to="/wiki/request-lifecycle">
+        <Link to="/wiki/rust/core/request-lifecycle">
           «Как Codex собирает запрос к LLM»
         </Link>
         : от сообщения пользователя до контекста, инструментов и цикла
@@ -198,7 +213,7 @@ export const MainPageView: React.FC = () => (
         проверки.
       </p>
       <nav className="actions" aria-label="Материалы сайта">
-        <Link to="/terms">Справочник понятий</Link>
+        <Link to="/wiki">Справочник понятий</Link>
         <Link to="/wiki">Все разборы</Link>
       </nav>
       <p className="evidence-note">

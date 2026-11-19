@@ -1,4 +1,5 @@
-import { terms } from '../../app/Custom/pages/Terms/data'
+import { listWikiPaths } from '../wiki/listWikiPaths'
+const wikiPaths = await listWikiPaths()
 import { createServer, type Server } from 'node:http'
 import type { AddressInfo } from 'node:net'
 import express from 'express'
@@ -60,9 +61,11 @@ describe('Динамическая карта сайта', () => {
     query.orderBy.mockResolvedValueOnce([])
     const xml = await (await fetch(`${origin}/sitemap.xml`)).text()
     expect(xml).toContain(`<loc>${origin}/</loc>`)
-    expect(xml.match(/<url>/g)).toHaveLength(terms.length + 4)
-    expect(xml).toContain(`<loc>${origin}/terms/subagent</loc>`)
-    expect(xml).toContain(`<loc>${origin}/wiki/request-lifecycle</loc>`)
+    expect(xml.match(/<url>/g)).toHaveLength(wikiPaths.length + 2)
+    expect(xml).toContain(`<loc>${origin}/wiki/concepts/subagent</loc>`)
+    for (const path of wikiPaths) {
+      expect(xml).toContain(`<loc>${origin}${path}</loc>`)
+    }
     expect(xml).not.toContain(`<loc>${origin}/docs</loc>`)
     expect(xml).not.toContain(`<loc>${origin}/docs/video-calls</loc>`)
     expect(xml).not.toContain('<lastmod>')
@@ -87,7 +90,7 @@ describe('Динамическая карта сайта', () => {
       ]),
     )
     const xml = await (await fetch(`${origin}/sitemap.xml`)).text()
-    expect(xml.match(/<url>/g)).toHaveLength(terms.length + 4)
+    expect(xml.match(/<url>/g)).toHaveLength(wikiPaths.length + 2)
     for (const path of paths) {
       expect(xml).not.toContain(`${origin}${path}`)
     }
@@ -106,7 +109,7 @@ describe('Динамическая карта сайта', () => {
     expect(query.whereNot).toHaveBeenCalledWith('visibility', 'unpublished')
     expect(xml).toContain('/example?a=1&amp;b=2</loc>')
     expect(xml).toContain('<lastmod>2026-10-01T00:00:00.000Z</lastmod>')
-    expect(xml.match(/<url>/g)).toHaveLength(terms.length + 5)
+    expect(xml.match(/<url>/g)).toHaveLength(wikiPaths.length + 3)
     expect(xml).not.toContain('other.example')
     query.orderBy.mockResolvedValueOnce([{ uri: '/new-page' }])
     const nextXml = await (await fetch(`${origin}/sitemap.xml`)).text()

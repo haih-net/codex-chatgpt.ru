@@ -1,4 +1,4 @@
-import { terms } from '../../app/Custom/pages/Terms/data'
+import { listWikiPaths } from '../wiki/listWikiPaths'
 import type { Express, Request, Response } from 'express'
 import { db } from '../database'
 
@@ -60,10 +60,10 @@ async function generateSitemap(req: Request, res: Response): Promise<void> {
   const xml = generateUrls(
     [
       { uri: '/' },
-      { uri: '/terms' },
-      ...terms.map((term) => ({ uri: `/terms/${term.id}` })),
       { uri: '/wiki' },
-      { uri: '/wiki/request-lifecycle' },
+      ...(await listWikiPaths(process.env.NODE_ENV === 'production')).map(
+        (uri) => ({ uri }),
+      ),
       ...concepts,
     ],
     origin,

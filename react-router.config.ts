@@ -1,15 +1,16 @@
-import { terms } from './app/Custom/pages/Terms/data'
+import { listWikiPaths } from './server/wiki/listWikiPaths'
 import type { Config } from '@react-router/dev/config'
+
 export default {
   ssr: true,
-  prerender: [
-    '/',
-    '/docs',
-    '/docs/video-calls',
-    '/terms',
-    ...terms.map((term) => `/terms/${term.id}`),
-    '/wiki',
-    '/wiki/request-lifecycle',
-  ],
+  async prerender() {
+    return [
+      '/',
+      '/docs',
+      '/docs/video-calls',
+      '/wiki',
+      ...(await listWikiPaths()),
+    ]
+  },
   routeDiscovery: { mode: 'initial' },
 } satisfies Config

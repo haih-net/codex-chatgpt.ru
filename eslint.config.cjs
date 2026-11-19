@@ -10,6 +10,11 @@ const unusedImports = require('eslint-plugin-unused-imports')
 module.exports = [
   {
     ignores: [
+      'codex-lab/repos/**',
+      'codex-lab/target/**',
+      'codex-lab/bin/**',
+      'codex-lab/projects/**',
+
       'server/database/data/**',
       'docker/supabase/data/**',
       'docker/mailserver/mail-data/**',
