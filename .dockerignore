@@ -2,6 +2,7 @@
 !/codex-lab/scripts
 
 generated
+.git
 
 /server/database/data
 /storage
@@ -16,6 +17,20 @@ generated
 /playwright-report
 /test-results
 
+docker/monitoring/.secrets
+docker/monitoring/alertmanager/generated.json
+
+docker/traefik/certs
+docker/traefik/logs
+
+# Runtime credentials must not enter build stages or image layers.
+**/.env
+**/.env.*
+!.env.example
+!docker/.env.example
+
+# Mailserver runtime state and accounts must not enter application images.
+docker/mailserver
 /docker/mailserver/mail-data
 /docker/mailserver/mail-state
 /docker/mailserver/mail-logs
