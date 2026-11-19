@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'TypeScript SDK',
   description:
     'Как запускать Codex из программы и получать события и результаты без диалогового терминального интерфейса. Начните с неинтерактивного запуска, на котором основана работа TypeScript SDK.',

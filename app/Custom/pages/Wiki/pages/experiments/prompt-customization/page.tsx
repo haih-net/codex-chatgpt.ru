@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Кастомизация системных промптов и инструкций',
   description:
     'Эксперимент с пронумерованными инструкциями Codex: конфигурация, каталог моделей, реальные сессии и необходимость пересборки.',

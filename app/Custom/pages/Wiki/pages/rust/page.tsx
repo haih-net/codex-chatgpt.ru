@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Ядро Rust',
   description:
     'Проследите путь от принятого сообщения до запроса к модели, выполнения инструментов и сохранённой истории. Раздел связывает устройство ядра Codex с событиями, которые видит клиент.',

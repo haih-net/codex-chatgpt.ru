@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Протокол и история',
   description:
     'Как устроены записи сессии и элементы обмена с моделью. Раздел помогает различать уровни данных и находить соответствующие определения в Rust.',

@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Контроль, ошибки и разрешения',
   description:
     'События, объясняющие ожидание, сбой или необходимость участия пользователя. Здесь собраны запросы информации и доступа, предупреждения, восстановление авторизации и проверки разрешений.',

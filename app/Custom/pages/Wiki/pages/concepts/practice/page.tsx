@@ -1,5 +1,6 @@
 import type { WikiPageMetadata } from '../../../model'
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Подготовка к упражнениям',
   description:
     'Ревизия исходников и условия самостоятельных экспериментов с Codex.',

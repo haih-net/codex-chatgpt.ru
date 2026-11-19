@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Концепты',
   description:
     'Разберитесь, как языковая модель, обвязки, инструменты и среда выполнения образуют агента. Эти понятия помогают читать исходники и точно описывать происходящее при выполнении задачи.',

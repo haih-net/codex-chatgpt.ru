@@ -26,6 +26,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'event-mcp-tool-call-end',
   title: 'Событие mcp_tool_call_end',
   description:

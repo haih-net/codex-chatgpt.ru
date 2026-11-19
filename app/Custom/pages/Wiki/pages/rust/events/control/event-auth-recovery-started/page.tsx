@@ -26,6 +26,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'event-auth-recovery-started',
   title: 'Событие auth_recovery_started',
   description:

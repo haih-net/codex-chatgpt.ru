@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Как Codex собирает запрос к LLM',
   description:
     'Роль models.json, сборка инструкций и инструментов, наследование субагентами и локальная оркестрация. Проверка по коду Codex.',

@@ -2,6 +2,7 @@ import { Link } from 'react-router'
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Как экономить место при сборке Codex',
   description:
     'Как использовать общий кеш Cargo для нескольких копий исходников Codex и сохранять готовые сборки отдельно.',

@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Записи сессии',
   description:
     'Верхнеуровневые записи сохранённой истории Codex: сведения о сессии, контекст хода, события, сообщения между агентами и контрольные точки. Они помогают понять, что именно хранится в файле сессии.',

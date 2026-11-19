@@ -26,6 +26,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'event-dynamic-tool-call-request',
   title: 'Событие dynamic_tool_call_request',
   description:

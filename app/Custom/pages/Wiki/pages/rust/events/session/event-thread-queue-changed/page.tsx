@@ -26,6 +26,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'event-thread-queue-changed',
   title: 'Событие thread_queue_changed',
   description:

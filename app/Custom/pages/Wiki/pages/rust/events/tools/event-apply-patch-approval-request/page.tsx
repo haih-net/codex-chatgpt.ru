@@ -26,6 +26,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'event-apply-patch-approval-request',
   title: 'Событие apply_patch_approval_request',
   description:

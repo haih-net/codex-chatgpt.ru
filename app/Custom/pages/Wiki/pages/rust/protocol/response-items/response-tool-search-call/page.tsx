@@ -25,6 +25,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'response-tool-search-call',
   title: 'Элемент tool_search_call',
   description:

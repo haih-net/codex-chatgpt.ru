@@ -24,6 +24,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'event-web-search-end',
   title: 'Событие web_search_end',
   description:

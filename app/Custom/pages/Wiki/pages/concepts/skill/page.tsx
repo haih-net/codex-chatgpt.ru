@@ -32,6 +32,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'skill',
   title: 'Навык (skill)',
   description:

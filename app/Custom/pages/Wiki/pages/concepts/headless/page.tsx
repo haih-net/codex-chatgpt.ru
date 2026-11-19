@@ -39,6 +39,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'headless',
   title: 'Неинтерактивный запуск',
   description:

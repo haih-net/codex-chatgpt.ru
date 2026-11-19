@@ -26,6 +26,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'event-collab-agent-interaction-end',
   title: 'Событие collab_agent_interaction_end',
   description:

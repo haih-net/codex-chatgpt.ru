@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'События',
   description:
     'События сообщают клиенту, что происходит во время работы Codex: начинается ход, поступает текст, выполняется команда или требуется ответ пользователя. Выберите группу по наблюдаемому действию.',

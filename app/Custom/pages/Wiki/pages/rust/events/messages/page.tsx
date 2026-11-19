@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Сообщения и рассуждения',
   description:
     'События пользовательского ввода, текста агента, планов и доступного клиенту рассуждения. Здесь объясняется, как потоковые фрагменты связаны с отдельными элементами и ответами модели.',

@@ -1,6 +1,28 @@
-import type { WikiBranch, WikiEntry } from '../model'
+import type { WikiBranch, WikiEntry, WikiSort } from '../model'
 
-export const createWikiTree = (pages: readonly WikiEntry[]): WikiBranch[] => {
+const defaultSort: WikiSort = { field: 'date', direction: 'ASC' }
+
+const sortWikiBranches = (branches: WikiBranch[], sort: WikiSort): void => {
+  branches.sort((a, b) => {
+    const comparison =
+      sort.field === 'date'
+        ? a.page.date - b.page.date
+        : a.page.title.localeCompare(b.page.title, 'ru')
+
+    return (
+      comparison * (sort.direction === 'ASC' ? 1 : -1) ||
+      a.page.key.localeCompare(b.page.key, 'ru')
+    )
+  })
+  for (const branch of branches) {
+    sortWikiBranches(branch.children, branch.page.sort ?? defaultSort)
+  }
+}
+
+export const createWikiTree = (
+  pages: readonly WikiEntry[],
+  sort: WikiSort = defaultSort,
+): WikiBranch[] => {
   const branches = new Map<string, WikiBranch>()
   for (const page of pages) {
     if (branches.has(page.key)) {
@@ -25,6 +47,7 @@ export const createWikiTree = (pages: readonly WikiEntry[]): WikiBranch[] => {
     }
     parent.children.push(branch)
   }
+  sortWikiBranches(roots, sort)
   return roots
 }
 

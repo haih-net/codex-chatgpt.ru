@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795125504000,
   title: 'Минимальный контекст и конечный запрос OpenAI',
   description:
     'Сокращение запроса Codex до одного сообщения пользователя: инструкции, настройки, каталог модели и экспериментальная сборка с записью JSON перед отправкой.',

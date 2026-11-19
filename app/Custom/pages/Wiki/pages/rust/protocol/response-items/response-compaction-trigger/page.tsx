@@ -26,6 +26,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'response-compaction-trigger',
   title: 'Элемент compaction_trigger',
   description:

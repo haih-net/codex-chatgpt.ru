@@ -26,6 +26,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'event-realtime-conversation-list-voices-response',
   title: 'Событие realtime_conversation_list_voices_response',
   description:

@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Изменить системный промпт Codex',
   description:
     'Как задать базовые инструкции Codex через файл, изменить их в исходниках и проверить, какой текст используется.',

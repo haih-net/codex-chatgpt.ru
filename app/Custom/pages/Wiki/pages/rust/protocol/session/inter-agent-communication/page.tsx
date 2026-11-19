@@ -26,6 +26,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'inter-agent-communication',
   title: 'Запись inter_agent_communication',
   description:

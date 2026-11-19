@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Инструменты',
   description:
     'Как Codex сообщает о запуске инструментов, промежуточном выводе и полученных результатах. В группе собраны события команд, патчей, поиска, изображений и динамических инструментов.',

@@ -40,6 +40,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1794726963000,
   termId: 'decomposition',
   title: 'Декомпозиция задачи',
   description:

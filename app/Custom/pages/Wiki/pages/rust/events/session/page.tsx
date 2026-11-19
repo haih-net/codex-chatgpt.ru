@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Сессия и её состояние',
   description:
     'События начала и завершения хода, подключения окружения, сокращения контекста и смены режима работы. Они помогают восстановить состояние сессии по последовательности уведомлений.',

@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Элементы ответа модели',
   description:
     'Сообщения, вызовы инструментов, результаты и управляющие элементы модельного протокола. Здесь разобраны варианты ResponseItem и связи между запросами и ответами инструментов.',

@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Эксперименты',
   description:
     'Здесь собраны опыты с настройками и окружением Codex: общая авторизация, повторное использование сборок, замена инструкций, уровни рассуждения и минимальный контекст. В статьях указано, что проверяли и какой результат получили.',

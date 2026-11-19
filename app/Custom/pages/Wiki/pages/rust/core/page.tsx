@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Устройство ядра',
   description:
     'Как Codex собирает контекст, выбирает инструкции и управляет ходом выполнения. Здесь разобраны основные механизмы, связывающие состояние сессии, модель и инструменты.',

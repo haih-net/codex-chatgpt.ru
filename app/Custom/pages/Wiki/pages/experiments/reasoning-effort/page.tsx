@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'На что влияет выбор Medium, High и других уровней',
   description:
     'Сравнение low, medium, high, xhigh, max и ultra в Codex: настройки, инструкции, токены и результаты запусков.',

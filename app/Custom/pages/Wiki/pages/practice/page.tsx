@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Практические руководства',
   description:
     'Подготовьте исходники Codex, соберите свою версию и запустите её с отдельными настройками. Руководства последовательно проводят от первой сборки до изменения базовых инструкций модели.',

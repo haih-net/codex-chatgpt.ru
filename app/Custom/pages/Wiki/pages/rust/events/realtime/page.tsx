@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Реальное время',
   description:
     'События жизненного цикла разговора в реальном времени: запуск, установление соединения, поток данных и закрытие. Здесь же разобран ответ со списком доступных голосов.',

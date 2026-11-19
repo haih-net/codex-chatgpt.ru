@@ -26,6 +26,7 @@ const exercise: TermExercise = {
 }
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   termId: 'event-agent-reasoning-raw-content',
   title: 'Событие agent_reasoning_raw_content',
   description:

@@ -2,6 +2,7 @@ import { Link } from 'react-router'
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Собрать Codex из исходников',
   description:
     'Как установить зависимости в Ubuntu, скачать исходники Codex, собрать CLI и проверить готовую программу.',

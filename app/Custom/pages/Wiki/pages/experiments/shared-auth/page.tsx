@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Отдельный CODEX_HOME без повторной авторизации',
   description:
     'Как подключить существующий auth.json к отдельному CODEX_HOME и использовать свой аккаунт в нескольких экспериментах.',

@@ -1,6 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
+  date: 1795091374000,
   title: 'Совместная работа агентов',
   description:
     'События создания, взаимодействия, ожидания и закрытия дочерних агентов. По ним можно проследить передачу поручения и изменения состояния исполнителей.',
