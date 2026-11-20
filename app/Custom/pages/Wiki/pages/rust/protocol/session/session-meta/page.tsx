@@ -35,5 +35,11 @@ export const metadata: WikiPageMetadata = {
     'Метаданные сессии: идентификаторы, рабочий каталог, происхождение запуска и базовые инструкции. Помогают установить условия эксперимента; сами по себе не являются сообщением пользователя.',
   sources,
   exercise,
-  related: ['event-msg', 'response-item'],
+  related: [
+    'event-msg',
+    'response-item',
+    'thread',
+    'rollout',
+    'context-window',
+  ],
 }

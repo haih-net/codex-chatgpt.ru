@@ -44,5 +44,12 @@ export const metadata: WikiPageMetadata = {
     'Сохраняемые обвязками сведения, которые могут использоваться в последующих запросах. Память отличается от текущего контекста, полной истории чата и параметров самой модели.',
   sources,
   exercise,
-  related: ['context', 'thread', 'compaction'],
+  related: [
+    'context',
+    'thread',
+    'compaction',
+    'rollout',
+    'checkpoint',
+    'resume',
+  ],
 }

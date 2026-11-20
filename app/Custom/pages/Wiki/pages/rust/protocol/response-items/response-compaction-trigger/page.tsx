@@ -35,5 +35,11 @@ export const metadata: WikiPageMetadata = {
     'Управляющий элемент запроса, запускающий компактацию. Хотя он входит в enum ResponseItem, исходники прямо отличают его от сохраняемого элемента ответа.',
   sources,
   exercise,
-  related: ['response-item', 'context'],
+  related: [
+    'response-item',
+    'context',
+    'checkpoint',
+    'compaction',
+    'compacted',
+  ],
 }

@@ -1,3 +1,5 @@
+import { TermLink } from 'app/Custom/components/Link/Term'
+import { getTerm } from 'app/Custom/pages/Wiki/terms/helpers/getTerm'
 import { metadata } from './page'
 import type * as React from 'react'
 import { Link } from 'react-router'
@@ -36,5 +38,25 @@ export const Page: React.FC = () => (
       </Link>
       .
     </p>
+    <section>
+      <h2>Границы хода и окна</h2>
+      <p>
+        Ход не равен{' '}
+        <TermLink term={getTerm('context-window')}>
+          {' '}
+          рабочему окну контекста
+        </TermLink>
+        : автоматическое сжатие может установить{' '}
+        <TermLink term={getTerm('checkpoint')}> checkpoint</TermLink> внутри
+        turn.{' '}
+        <TermLink term={getTerm('resume')}>
+          {' '}
+          Загрузка сохранённой сессии
+        </TermLink>{' '}
+        и отправка нового сообщения также являются разными действиями. Записи о
+        начале и завершении хода находятся в{' '}
+        <TermLink term={getTerm('rollout')}> журнале выполнения</TermLink>.
+      </p>
+    </section>
   </TermView>
 )

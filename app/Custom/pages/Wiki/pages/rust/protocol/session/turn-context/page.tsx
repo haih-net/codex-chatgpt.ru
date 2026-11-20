@@ -35,5 +35,12 @@ export const metadata: WikiPageMetadata = {
     'Сохранённые условия хода: рабочий каталог, модель, настройки рассуждения, разрешений и другие параметры. Используются при продолжении истории; не являются отдельной инструкцией модели.',
   sources,
   exercise,
-  related: ['event-msg', 'response-item'],
+  related: [
+    'event-msg',
+    'response-item',
+    'turn',
+    'context',
+    'context-window',
+    'rollout',
+  ],
 }

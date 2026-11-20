@@ -39,5 +39,13 @@ export const metadata: WikiPageMetadata = {
     'Данные, переданные LLM для текущей генерации: инструкции, сообщение пользователя, выбранная история, описания инструментов и результаты операций. История в интерфейсе и фактический вход модели могут различаться.',
   sources,
   exercise,
-  related: ['base-instructions', 'model-catalog', 'compaction', 'thread'],
+  related: [
+    'base-instructions',
+    'model-catalog',
+    'compaction',
+    'thread',
+    'context-window',
+    'rollout',
+    'checkpoint',
+  ],
 }

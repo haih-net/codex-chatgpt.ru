@@ -1,3 +1,5 @@
+import { TermLink } from 'app/Custom/components/Link/Term'
+import { getTerm } from 'app/Custom/pages/Wiki/terms/helpers/getTerm'
 import { metadata } from './page'
 import type * as React from 'react'
 import { TermView } from 'app/Custom/pages/Wiki/terms/TermView'
@@ -32,5 +34,12 @@ export const Page: React.FC = () => (
         дополнительное имя для чтения того же варианта.
       </p>
     </section>
+    <p>
+      Запись turn_context сохраняет параметры хода; её название не означает
+      полный <TermLink term={getTerm('context')}> вход модели</TermLink>.{' '}
+      <TermLink term={getTerm('context-window')}> Рабочее окно</TermLink> и{' '}
+      <TermLink term={getTerm('rollout')}> журнал</TermLink> рассматриваются как
+      отдельные понятия.
+    </p>
   </TermView>
 )

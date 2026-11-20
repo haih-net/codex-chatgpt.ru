@@ -16,6 +16,10 @@ export interface WikiPageMetadata {
   /** Порядок дочерних страниц раздела; по умолчанию date ASC. */
   sort?: WikiSort
   description: string
+  sourceVersion?: {
+    revision: string
+    inspectionDate: string
+  }
   sources?: TermSource[]
   exercise?: TermExercise
   related?: TermId[]

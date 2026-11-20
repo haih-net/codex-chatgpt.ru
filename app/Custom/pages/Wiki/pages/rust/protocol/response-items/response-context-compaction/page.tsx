@@ -35,5 +35,11 @@ export const metadata: WikiPageMetadata = {
     'Элемент модельного протокола для компактации контекста с необязательным encrypted_content. Отличается от события context_compacted и контрольной точки compacted в файле истории.',
   sources,
   exercise,
-  related: ['response-item', 'context'],
+  related: [
+    'response-item',
+    'context',
+    'checkpoint',
+    'compaction',
+    'compacted',
+  ],
 }

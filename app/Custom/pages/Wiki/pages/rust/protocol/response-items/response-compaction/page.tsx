@@ -33,5 +33,11 @@ export const metadata: WikiPageMetadata = {
     'Модельный элемент сокращения контекста с encrypted_content. При чтении также принимается имя compaction_summary; это alias того же варианта.',
   sources,
   exercise,
-  related: ['response-item', 'context'],
+  related: [
+    'response-item',
+    'context',
+    'checkpoint',
+    'compaction',
+    'compacted',
+  ],
 }

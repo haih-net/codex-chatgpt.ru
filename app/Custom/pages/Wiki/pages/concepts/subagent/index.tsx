@@ -1,3 +1,5 @@
+import { TermLink } from 'app/Custom/components/Link/Term'
+import { getTerm } from 'app/Custom/pages/Wiki/terms/helpers/getTerm'
 import { metadata } from './page'
 import type * as React from 'react'
 import { Link } from 'react-router'
@@ -44,5 +46,20 @@ export const Page: React.FC = () => (
       </Link>
       .
     </p>
+    <section>
+      <h2>Собственная история ребёнка</h2>
+      <p>
+        У дочернего thread своё{' '}
+        <TermLink term={getTerm('context-window')}> рабочее окно</TermLink> и
+        свой <TermLink term={getTerm('rollout')}> rollout</TermLink>. В
+        изученном локальном дереве общий session_id связывает работу, но не
+        заменяет уникальный идентификатор ребёнка. Наследование при fork и{' '}
+        <TermLink term={getTerm('resume')}>
+          {' '}
+          возобновление существующей сессии
+        </TermLink>{' '}
+        имеют разное назначение.
+      </p>
+    </section>
   </TermView>
 )

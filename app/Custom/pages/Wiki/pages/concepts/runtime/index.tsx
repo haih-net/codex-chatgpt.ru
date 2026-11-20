@@ -1,3 +1,5 @@
+import { TermLink } from 'app/Custom/components/Link/Term'
+import { getTerm } from 'app/Custom/pages/Wiki/terms/helpers/getTerm'
 import { metadata } from './page'
 import type * as React from 'react'
 import { Link } from 'react-router'
@@ -36,5 +38,17 @@ export const Page: React.FC = () => (
       </Link>
       .
     </p>
+    <section>
+      <h2>Время жизни процесса и истории</h2>
+      <p>
+        Завершение процесса не обязательно уничтожает сохранённую историю
+        thread. <TermLink term={getTerm('rollout')}> Rollout</TermLink> остаётся
+        в хранилище, а <TermLink term={getTerm('resume')}> resume</TermLink>{' '}
+        подготавливает сессию к продолжению в новом процессе.{' '}
+        <TermLink term={getTerm('checkpoint')}> Checkpoint контекста</TermLink>{' '}
+        восстанавливает модельную историю и связанные метаданные; это не снимок
+        всей памяти ОС или внешних программ.
+      </p>
+    </section>
   </TermView>
 )

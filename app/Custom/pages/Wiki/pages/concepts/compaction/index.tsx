@@ -1,3 +1,5 @@
+import { TermLink } from 'app/Custom/components/Link/Term'
+import { getTerm } from 'app/Custom/pages/Wiki/terms/helpers/getTerm'
 import { metadata } from './page'
 import type * as React from 'react'
 import { Link } from 'react-router'
@@ -36,5 +38,23 @@ export const Page: React.FC = () => (
       </Link>
       .
     </p>
+    <section>
+      <h2>Результат сжатия и продолжение</h2>
+      <p>
+        Установленный результат фиксируется как{' '}
+        <TermLink term={getTerm('checkpoint')}>
+          {' '}
+          контрольная точка контекста
+        </TermLink>
+        . Смена{' '}
+        <TermLink term={getTerm('context-window')}> рабочего окна</TermLink> не
+        требует нового thread. В{' '}
+        <TermLink term={getTerm('rollout')}> журнал</TermLink> добавляется
+        запись о замене истории, а{' '}
+        <TermLink term={getTerm('resume')}> resume</TermLink> использует
+        сохранённую основу для продолжения. Поля checkpoint и порядок
+        восстановления разобраны на страницах этих концептов.
+      </p>
+    </section>
   </TermView>
 )

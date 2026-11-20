@@ -45,5 +45,13 @@ export const metadata: WikiPageMetadata = {
     'Замена части контекста более компактным представлением для продолжения работы в пределах контекстного окна. Механизм должен отдельно определить момент сокращения, получить результат и установить новый контекст.',
   sources,
   exercise,
-  related: ['context', 'memory', 'orchestration'],
+  related: [
+    'context',
+    'memory',
+    'orchestration',
+    'checkpoint',
+    'context-window',
+    'rollout',
+    'resume',
+  ],
 }

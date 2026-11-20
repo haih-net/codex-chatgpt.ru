@@ -39,5 +39,12 @@ export const metadata: WikiPageMetadata = {
     'Идентифицируемая история работы агента и связанное с ней состояние в Codex. Поток и тред — синонимы. Поток может включать несколько ходов выполнения и не обязательно отображается пользователю как переписка. ThreadId обозначает объект приложения, а не поток или процесс операционной системы.',
   sources,
   exercise,
-  related: ['turn', 'context', 'subagent'],
+  related: [
+    'turn',
+    'context',
+    'subagent',
+    'resume',
+    'rollout',
+    'context-window',
+  ],
 }

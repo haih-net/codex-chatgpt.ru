@@ -39,5 +39,12 @@ export const metadata: WikiPageMetadata = {
     'Программное и аппаратное окружение, в котором работают компоненты агента: ОС, вычислительные ресурсы, среды запуска программ и библиотеки. Среда выполнения и логика оркестрации — разные понятия.',
   sources,
   exercise,
-  related: ['thread', 'subagent', 'parallelism'],
+  related: [
+    'thread',
+    'subagent',
+    'parallelism',
+    'rollout',
+    'resume',
+    'checkpoint',
+  ],
 }

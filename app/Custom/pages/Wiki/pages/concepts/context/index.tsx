@@ -1,3 +1,5 @@
+import { TermLink } from 'app/Custom/components/Link/Term'
+import { getTerm } from 'app/Custom/pages/Wiki/terms/helpers/getTerm'
 import { metadata } from './page'
 import type * as React from 'react'
 import { Link } from 'react-router'
@@ -41,5 +43,17 @@ export const Page: React.FC = () => (
         Общее объяснение понятия в справочнике «Что такое ИИ»
       </a>
     </p>
+    <section>
+      <h2>Контекст, окно и сохранённая история</h2>
+      <p>
+        Состав входа конкретной генерации следует отличать от{' '}
+        <TermLink term={getTerm('context-window')}> контекстного окна</TermLink>{' '}
+        и <TermLink term={getTerm('rollout')}> журнала rollout</TermLink>.
+        Ограничение окна определяет доступный бюджет, а журнал может хранить и
+        те записи, которые уже не входят в запрос. После сжатия основой
+        продолжения становится{' '}
+        <TermLink term={getTerm('checkpoint')}> контрольная точка</TermLink>.
+      </p>
+    </section>
   </TermView>
 )

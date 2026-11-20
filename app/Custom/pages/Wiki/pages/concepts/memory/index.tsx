@@ -1,3 +1,5 @@
+import { TermLink } from 'app/Custom/components/Link/Term'
+import { getTerm } from 'app/Custom/pages/Wiki/terms/helpers/getTerm'
 import { metadata } from './page'
 import type * as React from 'react'
 import { Link } from 'react-router'
@@ -36,5 +38,17 @@ export const Page: React.FC = () => (
       </Link>
       .
     </p>
+    <section>
+      <h2>Продолжение истории и долговременные сведения</h2>
+      <p>
+        <TermLink term={getTerm('rollout')}> Журнал выполнения</TermLink>{' '}
+        сохраняет историю сессии;{' '}
+        <TermLink term={getTerm('checkpoint')}> контрольная точка</TermLink>{' '}
+        фиксирует основу сокращённого контекста, а{' '}
+        <TermLink term={getTerm('resume')}> возобновление</TermLink> использует
+        сохранённое состояние. Эти механизмы не следует смешивать с извлечением
+        и консолидацией памяти, рассматриваемыми здесь.
+      </p>
+    </section>
   </TermView>
 )

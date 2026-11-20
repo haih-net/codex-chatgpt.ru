@@ -26,6 +26,8 @@ export const TermView: React.FC<React.PropsWithChildren<TermViewProps>> = ({
 }) => {
   const anchorPrefix = useWikiAnchorPrefix()
   const { sources, exercise, related } = metadata
+  const revision = metadata.sourceVersion?.revision ?? codexRevision
+  const inspectedAt = metadata.sourceVersion?.inspectionDate ?? inspectionDate
   const page = wikiPages.find((entry) => entry.termId === metadata.termId)
   if (!page) {
     throw new Error(`Не найдена страница термина: ${metadata.termId}`)
@@ -67,8 +69,8 @@ export const TermView: React.FC<React.PropsWithChildren<TermViewProps>> = ({
                 Где проверить в исходниках
               </h2>
               <p className="evidence-note">
-                Разбор от {inspectionDate}, ревизия <code>{codexRevision}</code>
-                . Пути ниже указаны от корня репозитория Codex. Они относятся к
+                Разбор от {inspectedAt}, ревизия <code>{revision}</code>. Пути
+                ниже указаны от корня репозитория Codex. Они относятся к
                 реализации клиента; внутренний код серверов OpenAI здесь не
                 исследуется.
               </p>

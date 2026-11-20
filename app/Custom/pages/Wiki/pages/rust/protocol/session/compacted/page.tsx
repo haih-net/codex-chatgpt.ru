@@ -34,5 +34,5 @@ export const metadata: WikiPageMetadata = {
     'Сохранённая контрольная точка сокращения истории. Содержит результат компактации и данные, нужные для восстановления контекста; отличается от уведомления context_compacted.',
   sources,
   exercise,
-  related: ['event-msg', 'response-item'],
+  related: ['event-msg', 'response-item', 'checkpoint', 'rollout', 'resume'],
 }

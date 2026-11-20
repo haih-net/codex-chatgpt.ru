@@ -1,3 +1,5 @@
+import { TermLink } from 'app/Custom/components/Link/Term'
+import { getTerm } from 'app/Custom/pages/Wiki/terms/helpers/getTerm'
 import { metadata } from './page'
 import type * as React from 'react'
 import { TermView } from 'app/Custom/pages/Wiki/terms/TermView'
@@ -32,5 +34,13 @@ export const Page: React.FC = () => (
         дополнительное имя для чтения того же варианта.
       </p>
     </section>
+    <p>
+      Это метаданные{' '}
+      <TermLink term={getTerm('rollout')}> журнала выполнения</TermLink>, а не
+      весь <TermLink term={getTerm('context')}> контекст модели</TermLink>.
+      Идентификаторы thread и{' '}
+      <TermLink term={getTerm('context-window')}> рабочего окна</TermLink>{' '}
+      относятся к разным уровням.
+    </p>
   </TermView>
 )

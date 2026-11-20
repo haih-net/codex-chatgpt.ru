@@ -59,5 +59,13 @@ export const metadata: WikiPageMetadata = {
     'Агент, созданный другим агентом для отдельного поручения. Это роль в дереве работы: у субагента своя сессия и контекст. Дочернее положение само по себе не означает более слабую модель или фиксированно урезанный набор инструментов.',
   sources,
   exercise,
-  related: ['agent', 'base-instructions', 'decomposition', 'parallelism'],
+  related: [
+    'agent',
+    'base-instructions',
+    'decomposition',
+    'parallelism',
+    'rollout',
+    'context-window',
+    'resume',
+  ],
 }

@@ -1,3 +1,5 @@
+import { TermLink } from 'app/Custom/components/Link/Term'
+import { getTerm } from 'app/Custom/pages/Wiki/terms/helpers/getTerm'
 import { metadata } from './page'
 import type * as React from 'react'
 import { Link } from 'react-router'
@@ -42,5 +44,19 @@ export const Page: React.FC = () => (
       </Link>
       .
     </p>
+    <section>
+      <h2>Идентичность и продолжение</h2>
+      <p>
+        <TermLink term={getTerm('resume')}> Возобновление (resume)</TermLink>{' '}
+        продолжает существующий thread; подробности чтения истории описаны
+        отдельно. В исследованном дереве агентов session_id общий для родителя и
+        детей, а id каждого thread различается. Поэтому поле session_id не
+        следует автоматически считать синонимом thread_id. Происхождение и ход
+        работы фиксируются в{' '}
+        <TermLink term={getTerm('rollout')}> журналах rollout</TermLink>;{' '}
+        <TermLink term={getTerm('context-window')}> окно контекста</TermLink>{' '}
+        может сменяться внутри того же thread.
+      </p>
+    </section>
   </TermView>
 )

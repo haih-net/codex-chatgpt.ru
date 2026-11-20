@@ -40,5 +40,13 @@ export const metadata: WikiPageMetadata = {
     'Цикл работы агента над принятым вводом внутри потока: подготовка контекста, одна или несколько генераций и возможные вызовы инструментов до завершения, ошибки или прерывания.',
   sources,
   exercise,
-  related: ['thread', 'parallelism', 'orchestration'],
+  related: [
+    'thread',
+    'parallelism',
+    'orchestration',
+    'context-window',
+    'checkpoint',
+    'resume',
+    'rollout',
+  ],
 }
