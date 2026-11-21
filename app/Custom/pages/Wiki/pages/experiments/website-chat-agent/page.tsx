@@ -1,7 +1,7 @@
 import type { WikiPageMetadata } from 'app/Custom/pages/Wiki/model'
 
 export const metadata: WikiPageMetadata = {
-  date: 1795266000000,
+  date: 1795208400000,
   title: 'Интеграция Codex на сайт в качестве чат-агента',
   description:
     'Чат сайта через Codex app-server и OpenRouter: примеры своих инструментов и навыков, обработка вызовов, настройка home и проверка сценариев.',
